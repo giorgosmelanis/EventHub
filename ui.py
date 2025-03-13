@@ -14,32 +14,70 @@ from models import load_events, save_events, load_users, save_users
 class EventManagementApp(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.initialize_attributes()  # Initialize all necessary attributes
+        self.setup_ui()  # Set up the UI components
+
+    def initialize_attributes(self):
+        """Initialize all necessary attributes for the application."""
+        # Window and UI attributes
         self.setWindowTitle("Event Hub")
         self.setGeometry(100, 100, 1200, 800)
         self.setMinimumSize(800, 600)  # Set a minimum size to prevent the window from becoming too small
 
-        # Set background image
+        # Background image
         self.background_image = QPixmap("eventHub_logo.jpg")  # Replace with your image path
         self.set_background()
 
-        # Initialize display_mode
+        # Display mode
         self.display_mode = "grid"  # Default to grid mode
 
-        # Load data
+        # Data attributes
         self.events = load_events()
         self.users = load_users()
         self.current_user = None  # Track the logged-in user
+
+        # Pagination attributes
+        self.events_per_page = 5  # Default number of events per page
+        self.current_page = 1  # Track the current page
+        self.total_pages = 1  # Default value
 
         # Debug: Print initial events
         print("Initial Events:")
         for event in self.events:
             print(event)
 
-        # Initialize total_pages
-        self.total_pages = 1  # Default value
-
-        # Create tabs
+        # Tabs and UI components
         self.tabs = QTabWidget()
+        self.private_tabs = {}  # Store private tabs for logged-in users
+        self.login_tab = None  # Reference to the login tab
+        self.logoff_btn = None  # Log Off button
+        self.top_right_widget = None  # Widget for the top-right corner
+        self.top_right_layout = None  # Layout for the top-right corner
+
+        # Filter attributes
+        self.from_date_filter_edit = None
+        self.to_date_filter_edit = None
+        self.location_filter_combobox = None
+        self.type_filter_combobox = None
+        self.items_per_page_combobox = None
+        self.tiles_per_row_combobox = None
+
+        # Stacked widget for grid and list modes
+        self.stacked_widget = None
+        self.grid_widget = None
+        self.grid_layout = None
+        self.list_widget = None
+        self.list_layout = None
+
+        # Pagination controls
+        self.pagination_layout = None
+        self.prev_page_btn = None
+        self.next_page_btn = None
+        self.page_label = None
+
+    def setup_ui(self):
+        """Set up the UI components."""
+        # Set up the tabs
         self.tabs.setStyleSheet("""
             QTabBar::tab {
                 background-color: rgba(255, 111, 97, 0.8);  /* Semi-transparent coral */
@@ -100,21 +138,16 @@ class EventManagementApp(QMainWindow):
             QScrollBar::sub-page:horizontal {
                 background: none;
             }
-                                
         """)
         self.setCentralWidget(self.tabs)
 
         # Public menus (visible to everyone)
         self.create_home_tab()
         self.create_events_tab()
-        # Create and store a reference to the Login Tab
         self.login_tab = self.create_login_tab()
 
-        # Private menus (will be added dynamically based on user type)
-        self.private_tabs = {}
-
         # Log Off Button (initially hidden)
-        self.logoff_btn = QPushButton("Log Off")
+        self.logoff_btn = AnimatedButton("Log Off")
         self.logoff_btn.setStyleSheet("""
             QPushButton {
                 background-color: #D91656;  /* Accent Color 1 */
@@ -178,7 +211,7 @@ class EventManagementApp(QMainWindow):
         button_layout = QHBoxLayout()
 
         # View Events Button
-        view_events_btn = QPushButton("Προβολή Εκδηλώσεων")
+        view_events_btn = AnimatedButton("Προβολή Εκδηλώσεων")
         view_events_btn.setIcon(qta.icon("fa5s.calendar"))  # Calendar icon
         view_events_btn.setStyleSheet("""
             QPushButton {
@@ -196,7 +229,7 @@ class EventManagementApp(QMainWindow):
         button_layout.addWidget(view_events_btn)
 
         # Login Button
-        login_btn = QPushButton("Σύνδεση/Εγγραφή")
+        login_btn = AnimatedButton("Σύνδεση/Εγγραφή")
         login_btn.setIcon(qta.icon("fa5s.sign-in-alt"))  # Sign-in icon
         login_btn.setStyleSheet("""
             QPushButton {
@@ -381,12 +414,12 @@ class EventManagementApp(QMainWindow):
         # Pagination
         self.current_page = 1
         self.pagination_layout = QHBoxLayout()
-        self.prev_page_btn = QPushButton("Προηγούμενη")
+        self.prev_page_btn = AnimatedButton("Προηγούμενη")
         self.prev_page_btn.setIcon(qta.icon("fa5s.arrow-left"))  # Arrow-left icon
         self.prev_page_btn.setStyleSheet("background-color: #FFB200; color: white; padding: 10px; border-radius: 5px;")
         self.prev_page_btn.clicked.connect(self.prev_page)
 
-        self.next_page_btn = QPushButton("Επόμενη")
+        self.next_page_btn = AnimatedButton("Επόμενη")
         self.next_page_btn.setIcon(qta.icon("fa5s.arrow-right"))  # Arrow-right icon
         self.next_page_btn.setStyleSheet("background-color: #FFB200; color: white; padding: 10px; border-radius: 5px;")
         self.next_page_btn.clicked.connect(self.next_page)
@@ -519,23 +552,30 @@ class EventManagementApp(QMainWindow):
             }
         """)
 
-        event_layout = QVBoxLayout()
-        event_layout.setSpacing(10)  # Add spacing between widgets
+        # Use QHBoxLayout for the main layout
+        event_layout = QHBoxLayout()
+        event_layout.setSpacing(15)  # Add spacing between widgets
 
-        # Event Image
+        # Event Image (Left Side)
         if event["image"]:
             image_label = QLabel()
             pixmap = QPixmap(event["image"])
-            image_label.setPixmap(pixmap.scaled(280, 200, Qt.KeepAspectRatio))  # Scale the image to fit within the widget
-            event_layout.addWidget(image_label, alignment=Qt.AlignCenter)
+            image_label.setPixmap(pixmap.scaled(200, 150, Qt.KeepAspectRatio))  # Scale the image
+            image_label.setFixedWidth(int(self.width() / 5))  # Set image width to 1/5 of the widget width
+            event_layout.addWidget(image_label, alignment=Qt.AlignLeft)
         else:
             # Add a placeholder if no image is available
             placeholder_label = QLabel("No Image Available")
             placeholder_label.setAlignment(Qt.AlignCenter)
             placeholder_label.setStyleSheet("font-size: 14px; color: #777;")
-            event_layout.addWidget(placeholder_label)
+            placeholder_label.setFixedWidth(int(self.width() / 5))  # Set placeholder width to 1/5 of the widget width
+            event_layout.addWidget(placeholder_label, alignment=Qt.AlignLeft)
 
-        # Event Details
+        # Event Details (Right Side)
+        details_layout = QVBoxLayout()
+        details_layout.setSpacing(10)
+
+        # Event Details Text
         details_label = QLabel(
             f"<b>Ημερομηνία:</b> {event['date']}<br>"
             f"<b>Τοποθεσία:</b> {event['location']}<br>"
@@ -543,25 +583,15 @@ class EventManagementApp(QMainWindow):
         )
         details_label.setStyleSheet("font-size: 14px; color: #333;")
         details_label.setWordWrap(True)  # Ensure text wraps within the widget
-        event_layout.addWidget(details_label)
+        details_layout.addWidget(details_label)
 
         # View More Button
-        view_more_btn = QPushButton("Περισσότερα")
-        view_more_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #D91656;
-                color: white;
-                padding: 10px;
-                font-size: 14px;
-                border-radius: 5px;
-                border: none;
-            }
-            QPushButton:hover {
-                background-color: #640D5F;
-            }
-        """)
+        view_more_btn = AnimatedButton("Περισσότερα")
         view_more_btn.clicked.connect(lambda _, e=event: self.show_event_details(e))
-        event_layout.addWidget(view_more_btn, alignment=Qt.AlignCenter)
+        details_layout.addWidget(view_more_btn, alignment=Qt.AlignLeft)
+
+        # Add the details layout to the main layout
+        event_layout.addLayout(details_layout)
 
         event_widget.setLayout(event_layout)
         return event_widget
@@ -600,7 +630,7 @@ class EventManagementApp(QMainWindow):
         details_layout.addWidget(details_label)
 
         # Close Button
-        close_btn = QPushButton("Κλείσιμο")
+        close_btn = AnimatedButton("Κλείσιμο")
         close_btn.setIcon(qta.icon("fa5s.times"))  # Times (close) icon
         close_btn.setStyleSheet("""
             QPushButton {
@@ -819,7 +849,7 @@ class EventManagementApp(QMainWindow):
         form_layout.addSpacing(30)
 
         # Login Button
-        login_btn = QPushButton("Σύνδεση")
+        login_btn = AnimatedButton("Σύνδεση")
         login_btn.setIcon(qta.icon("fa5s.sign-in-alt"))  # Sign-in icon
         login_btn.setStyleSheet("""
             QPushButton {
@@ -841,7 +871,7 @@ class EventManagementApp(QMainWindow):
         form_layout.addSpacing(10)
 
         # Signup Button
-        signup_btn = QPushButton("Εγγραφή")
+        signup_btn = AnimatedButton("Εγγραφή")
         signup_btn.setIcon(qta.icon("fa5s.user-plus"))  # User-plus icon
         signup_btn.setStyleSheet("""
             QPushButton {
@@ -911,7 +941,8 @@ class EventManagementApp(QMainWindow):
         self.private_tabs.clear()
 
         # Show the Login Tab again
-        self.create_login_tab()
+        if self.tabs.indexOf(self.login_tab) == -1:  # Only add if not exists
+            self.login_tab = self.create_login_tab()
 
         # Hide the Log Off button
         self.logoff_btn.hide()
@@ -934,27 +965,29 @@ class EventManagementApp(QMainWindow):
         # Add private tabs based on user type
         if user_type == "Creator":
             self.add_creator_tab()
-            self.tabs.setCurrentIndex(3)  # Redirect to Creator dashboard
+            self.tabs.setCurrentIndex(self.tabs.count()-1)  # Redirect to Creator dashboard
         elif user_type == "Supplier":
             self.add_supplier_tab()
-            self.tabs.setCurrentIndex(3)  # Redirect to Supplier dashboard
+            self.tabs.setCurrentIndex(self.tabs.count()-1) # Redirect to Supplier dashboard
         elif user_type == "Attendee":
             self.add_attendee_tab()
-            self.tabs.setCurrentIndex(3)  # Redirect to Attendee dashboard
+            self.tabs.setCurrentIndex(self.tabs.count()-1)  # Redirect to Attendee dashboard
 
     # Creator Section #
     def add_creator_tab(self):
         self.logoff_btn.show()  # Show the button
         creator_tab = QWidget()
-        layout = QVBoxLayout()
+        layout_dashboard = QVBoxLayout()
 
         label = QLabel("Δημιουργός Εκδηλώσεων")
         label.setFont(QFont("Helvetica", 20, QFont.Bold))
         label.setStyleSheet("color: #ff6f61;")
-        layout.addWidget(label)
+        layout_dashboard.addWidget(label)
+
+
 
         # Create Event Button
-        create_event_btn = QPushButton("Δημιουργία Εκδήλωσης")
+        create_event_btn = AnimatedButton("Δημιουργία Εκδήλωσης")
         create_event_btn.setIcon(qta.icon("fa5s.plus"))  # Plus icon
         create_event_btn.setStyleSheet("""
             QPushButton {
@@ -970,9 +1003,42 @@ class EventManagementApp(QMainWindow):
             }
         """)
         create_event_btn.clicked.connect(self.open_create_event_modal)
-        layout.addWidget(create_event_btn)
+        layout_dashboard.addWidget(create_event_btn)
 
-        # Add a scroll area for the event list
+            # My Event Button
+
+        show_event_btn = AnimatedButton("My Events")
+        show_event_btn.setIcon(qta.icon("fa5s.history"))  # History icon
+
+        # show_event_btn = QPushButton("My Events")
+        # show_event_btn.setIcon(qta.icon("fa5s.history"))  # Plus icon
+        show_event_btn.setStyleSheet("""
+            QPushButton {
+                background-color: #FFB200;  /* Primary color */
+                color: white;
+                padding: 15px;
+                font-size: 16px;
+                border-radius: 10px;
+                border: none;
+            }
+            QPushButton:hover {
+                background-color: #EB5B00;  /* Secondary color */
+            }
+        """)
+        show_event_btn.clicked.connect(self.show_my_events_tab)
+        layout_dashboard.addWidget(show_event_btn)
+
+        
+
+        my_events_tab = QWidget()
+        layout_my_events = QVBoxLayout()
+
+        label = QLabel("My Events")
+        label.setFont(QFont("Helvetica", 20, QFont.Bold))
+        label.setStyleSheet("color: #ff6f61;")
+        layout_my_events.addWidget(label)
+
+            # Add a scroll area for the event list
         scroll_area = QScrollArea()
         scroll_area.setWidgetResizable(True)  # Allow the widget to resize
         scroll_area.setStyleSheet("border: none;")  # Remove border
@@ -992,14 +1058,17 @@ class EventManagementApp(QMainWindow):
         scroll_area.setWidget(event_list_container)
 
         # Add the scroll area to the main layout
-        layout.addWidget(scroll_area)
+        layout_my_events.addWidget(scroll_area)
 
-        creator_tab.setLayout(layout)
-        self.tabs.addTab(creator_tab, QIcon("icons/creator.png"), "Δημιουργός")  # Add icon to the Creator tab
+        creator_tab.setLayout(layout_dashboard)
+        my_events_tab.setLayout(layout_my_events)
+        self.tabs.addTab(creator_tab, qta.icon("fa5s.user-edit"), "Δημιουργός")  # Add icon to the Creator tab
+        self.tabs.addTab(my_events_tab, qta.icon("fa5s.calendar-alt"), "My Events")  # Add icon to the Creator tab
         self.private_tabs["Creator"] = creator_tab
+        self.private_tabs["My Events"] = my_events_tab
 
     def display_creator_events(self, layout):
-        """Display events created by the logged-in user."""
+        """Display events created by the logged-in user with pagination."""
         if not self.current_user:
             return
 
@@ -1013,10 +1082,48 @@ class EventManagementApp(QMainWindow):
             if widget:
                 widget.deleteLater()
 
+        # Paginate events
+        total_events = len(creator_events)
+        total_pages = (total_events + self.events_per_page - 1) // self.events_per_page  # Calculate total pages
+
+        # Ensure current_page is within valid range
+        self.current_page = max(1, min(self.current_page, total_pages))
+
+        # Get events for the current page
+        start_index = (self.current_page - 1) * self.events_per_page
+        end_index = start_index + self.events_per_page
+        paginated_events = creator_events[start_index:end_index]
+
         # Add event widgets to the layout
-        for event in creator_events:
+        for event in paginated_events:
             event_widget = self.create_event_widget(event, is_list=True)
             layout.addWidget(event_widget)
+
+        # Add pagination controls
+        pagination_layout = QHBoxLayout()
+
+        # Previous button
+        prev_button = QPushButton("Previous")
+        prev_button.clicked.connect(lambda: self.change_page(layout, -1))
+        prev_button.setEnabled(self.current_page > 1)  # Disable on first page
+        pagination_layout.addWidget(prev_button)
+
+        # Page number label
+        page_label = QLabel(f"Page {self.current_page} of {total_pages}")
+        pagination_layout.addWidget(page_label)
+
+        # Next button
+        next_button = QPushButton("Next")
+        next_button.clicked.connect(lambda: self.change_page(layout, 1))
+        next_button.setEnabled(self.current_page < total_pages)  # Disable on last page
+        pagination_layout.addWidget(next_button)
+
+        layout.addLayout(pagination_layout)
+
+    def change_page(self, layout, delta):
+        """Change the current page and update the displayed events."""
+        self.current_page += delta
+        self.display_creator_events(layout)
 
     # Supplier Section #
     def add_supplier_tab(self):
@@ -1065,6 +1172,9 @@ class EventManagementApp(QMainWindow):
 
     def show_login_tab(self):
         self.tabs.setCurrentIndex(2)
+
+    def show_my_events_tab(self):
+        self.tabs.setCurrentIndex()
 
 
 class SignupModal(QWidget):
@@ -1165,7 +1275,7 @@ class SignupModal(QWidget):
 
         # User type selection
         self.user_type_combobox = QComboBox()
-        self.user_type_combobox.addItems(["Attendee", "Creator", "Supplier", "Guest"])
+        self.user_type_combobox.addItems(["Attendee", "Creator", "Supplier"])
         self.user_type_combobox.setStyleSheet("""
             padding: 10px;
             border-radius: 5px;
@@ -1176,7 +1286,7 @@ class SignupModal(QWidget):
         form.addRow("Τύπος Χρήστη:", self.user_type_combobox)
 
         # Signup button
-        signup_btn = QPushButton("Εγγραφή")
+        signup_btn = AnimatedButton("Εγγραφή")
         signup_btn.setStyleSheet("""
             QPushButton {
                 background-color: #D91656;  /* Accent Color 1 */
@@ -1305,7 +1415,7 @@ class CreateEventModal(QWidget):
 
         # Event location input (drop-down box)
         self.event_location_combobox = QComboBox()
-        self.event_location_combobox.addItems(["Όλες", "Αθήνα", "Θεσσαλονίκη", "Πάτρα", "Ηράκλειο"])
+        self.event_location_combobox.addItems(["Αθήνα", "Θεσσαλονίκη", "Πάτρα", "Ηράκλειο"])
         self.event_location_combobox.setStyleSheet("""
             padding: 10px;
             border-radius: 5px;
@@ -1421,7 +1531,8 @@ class CreateEventModal(QWidget):
 
             # Copy the image to the images directory
             file_name = os.path.basename(file_path)
-            save_path = os.path.join("event_images", file_name)
+            save_path = os.path.normpath(os.path.join("event_images", file_name))  # Normalize path
+            self.image_path = os.path.relpath(save_path)  # Store relative path
             shutil.copy(file_path, save_path)
             self.image_path = save_path.replace("\\", "/")  # Ensure forward slashes
 
@@ -1466,6 +1577,48 @@ class CreateEventModal(QWidget):
         QMessageBox.information(self, "Επιτυχία", "Η εκδήλωση δημιουργήθηκε με επιτυχία!")
         self.close()
 
+
+# Styling Tests
+
+
+class AnimatedButton(QPushButton):
+    def __init__(self, text, parent=None):
+        super().__init__(text, parent)
+        self.setStyleSheet("""
+            QPushButton {
+                background-color: #D91656;  /* Accent Color 1 */
+                color: white;
+                padding: 10px 20px;
+                font-size: 14px;
+                border-radius: 5px;
+                border: none;
+            }
+            QPushButton:hover {
+                background-color: #640D5F;  /* Accent Color 2 */
+            }
+            QPushButton:pressed {
+                background-color: #4A0A4A;  /* Darker shade for pressed state */
+            }
+        """)
+
+        # Animation for hover effect
+        self.animation = QPropertyAnimation(self, b"geometry")
+        self.animation.setDuration(300)  # Duration in milliseconds
+        self.animation.setEasingCurve(QEasingCurve.OutQuad)
+
+    def enterEvent(self, event):
+        """Triggered when the mouse enters the button area."""
+        self.animation.setStartValue(self.geometry())
+        self.animation.setEndValue(QRect(self.x() - 5, self.y() - 5, self.width() + 10, self.height() + 10))
+        self.animation.start()
+        super().enterEvent(event)
+
+    def leaveEvent(self, event):
+        """Triggered when the mouse leaves the button area."""
+        self.animation.setStartValue(self.geometry())
+        self.animation.setEndValue(QRect(self.x() + 5, self.y() + 5, self.width() - 10, self.height() - 10))
+        self.animation.start()
+        super().leaveEvent(event)
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
