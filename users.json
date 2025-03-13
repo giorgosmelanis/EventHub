@@ -1,0 +1,56 @@
+[
+    {
+        "user_id": 1,
+        "email": "user1@example.com",
+        "password": "password123",
+        "name": "John",
+        "surname": "Doe",
+        "type": "Creator",
+        "phone": "6945674569"
+    },
+    {
+        "user_id": 2,
+        "email": "user2@example.com",
+        "password": "password456",
+        "name": "Jack",
+        "surname": "Taylor",
+        "type": "Attendee",
+        "phone": "6945674569"
+    },
+    {
+        "user_id": 3,
+        "email": "user3@example.com",
+        "password": "password789",
+        "name": "Jane",
+        "surname": "Plane",
+        "type": "Supplier",
+        "phone": "6945674569"
+    },
+    {
+        "user_id": 4,
+        "email": "test@opopo.com",
+        "password": "123456",
+        "name": "test",
+        "surname": "test",
+        "type": "Attendee",
+        "phone": "6945454545"
+    },
+    {
+        "user_id": 5,
+        "email": "kon.alex95@gmail.com",
+        "password": "123456",
+        "name": "Kostas",
+        "surname": "Alexiou",
+        "type": "Creator",
+        "phone": "6945454545"
+    },
+    {
+        "user_id": 6,
+        "email": "men@gmail.com",
+        "password": "123456",
+        "name": "Menios",
+        "surname": "Alanis",
+        "type": "Supplier",
+        "phone": "6945454545"
+    }
+]
