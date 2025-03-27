@@ -1440,7 +1440,7 @@ class EventManagementApp(QMainWindow):
 
     #endregion
 
-    #region Attendee Section #
+    # region Attendee Section #
 
     def add_attendee_tab(self):
         i = self.get_tab_index("Home")
@@ -1540,7 +1540,7 @@ class EventManagementApp(QMainWindow):
         scroll_area.setWidgetResizable(True)  # Allow the widget to resize
         scroll_area.setStyleSheet("border: none;")  # Remove border
         
-        self.create_attendee_find_events_tab(layout)
+        self.create_attendee_find_events_tab(layout_find_events)
         #endregion
 
 
@@ -1589,7 +1589,7 @@ class EventManagementApp(QMainWindow):
         """)
 
         # Add each event to the QListWidget
-        for event in creator_similar_events:
+        for event in attendee_find_events:
             event_name = event.get("title", "Unnamed Event")
             event_date = event.get("date", "Unknown Date")
             event_location = event.get("location", "Unknown Location")
