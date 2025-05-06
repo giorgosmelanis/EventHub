@@ -1,11 +1,11 @@
 [
     {
         "user_id": 1,
-        "email": "user1@example.com",
-        "password": "password123",
+        "email": "qw",
+        "password": "qw",
         "name": "John",
         "surname": "Doe",
-        "type": "Creator",
+        "type": "Organizer",
         "phone": "6945674569"
     },
     {
@@ -23,7 +23,7 @@
         "password": "password789",
         "name": "Jane",
         "surname": "Plane",
-        "type": "Supplier",
+        "type": "Vendor",
         "phone": "6945674569"
     },
     {
@@ -41,7 +41,7 @@
         "password": "123456",
         "name": "Kostas",
         "surname": "Alexiou",
-        "type": "Creator",
+        "type": "Organizer",
         "phone": "6945454545"
     },
     {
@@ -50,7 +50,7 @@
         "password": "123456",
         "name": "Menios",
         "surname": "Alanis",
-        "type": "Supplier",
+        "type": "Vendor",
         "phone": "6945454545"
     }
 ]
