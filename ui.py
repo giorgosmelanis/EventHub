@@ -1317,7 +1317,7 @@ class EventManagementApp(QMainWindow):
         organizer_history = [
             history for history in self.events
             if history.get("organizer_id") == self.current_user["user_id"] and 
-            datetime.strptime(history.get("start_date"), "%Y-%m-%d").date() < getDate
+            datetime.strptime(history.get("start_date"), "%d/%m/%Y").date() < getDate
         ]
 
         # Clear the layout before adding new widgets
@@ -1353,7 +1353,8 @@ class EventManagementApp(QMainWindow):
         getDate = datetime.now().date()
         print(getDate)
         # Filter events created by the current user
-        organizer_similar_events = [similar_events for similar_events in self.events if similar_events.get("organizer_id") != self.current_user["user_id"] and datetime.strptime(similar_events.get("start_date"), "%Y-%m-%d").date() >= getDate]
+
+        organizer_similar_events = [similar_events for similar_events in self.events if similar_events.get("organizer_id") != self.current_user["user_id"] and datetime.strptime(similar_events.get("start_date"), "%d/%m/%Y").date() >= getDate]
 
         # Clear the layout before adding new widgets
         while layout.count():
@@ -1563,7 +1564,8 @@ class EventManagementApp(QMainWindow):
         getDate = datetime.now().date()
         print(getDate)
         # Filter events created by the current user
-        attendee_find_events = [find_events for find_events in self.events if datetime.strptime(find_events.get("start_date"), "%Y-%m-%d").date() >= getDate]
+
+        attendee_find_events = [find_events for find_events in self.events if datetime.strptime(find_events.get("start_date"), "%d/%m/%Y").date() >= getDate]
 
         # Clear the layout before adding new widgets
         while layout.count():
@@ -2435,7 +2437,7 @@ class CreateEventModal(QWidget):
 
         # Create new event
         new_event = {
-            "id": len(self.parent.events) + 1,
+            "event_id": len(self.parent.events) + 1,
             "title": event_name,
             "start_date": event_start_date,
             "end_date": event_end_date,
