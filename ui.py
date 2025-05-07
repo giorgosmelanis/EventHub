@@ -1353,7 +1353,6 @@ class EventManagementApp(QMainWindow):
         getDate = datetime.now().date()
         print(getDate)
         # Filter events created by the current user
-
         organizer_similar_events = [similar_events for similar_events in self.events if similar_events.get("organizer_id") != self.current_user["user_id"] and datetime.strptime(similar_events.get("start_date"), "%d/%m/%Y").date() >= getDate]
 
         # Clear the layout before adding new widgets
@@ -1564,7 +1563,6 @@ class EventManagementApp(QMainWindow):
         getDate = datetime.now().date()
         print(getDate)
         # Filter events created by the current user
-
         attendee_find_events = [find_events for find_events in self.events if datetime.strptime(find_events.get("start_date"), "%d/%m/%Y").date() >= getDate]
 
         # Clear the layout before adding new widgets
