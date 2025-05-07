@@ -6,4 +6,7 @@ if __name__ == "__main__":
     app = QApplication(sys.argv)  # Now sys.argv is defined
     window = EventManagementApp()
     window.show()
+
     sys.exit(app.exec_())
+    
+
