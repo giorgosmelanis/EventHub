@@ -1,0 +1,17 @@
+[
+    {
+            "ticket_id": 1,                     
+            "event_id": 3,                        
+            "user_id": 7,                         
+            "ticket_type": "VIP",                
+            "price": 40.0,                        
+            "quantity_bought": 2,                
+            "purchase_date": "2025-05-06",       
+            "status": "valid",                   
+            "qr_code": "a1b2c3d4",               
+            "transfer_to_user_id": null,         
+            "refund_requested": false,           
+            "refund_status": null,               
+            "used_date": null                    
+    }
+]
