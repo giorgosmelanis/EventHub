@@ -4,19 +4,11 @@ import shutil
 import qtawesome as qta
 from PyQt5.QtWidgets import (
     QApplication, QMainWindow, QTabWidget, QWidget, QVBoxLayout, QLabel, QPushButton,
-<<<<<<< HEAD
-    QLineEdit, QComboBox, QTextEdit, QMessageBox, QHBoxLayout, QListWidget, QListWidgetItem, QFormLayout,
-    QDateEdit, QFileDialog, QGroupBox, QStackedWidget, QGridLayout, QScrollArea
-)
-from PyQt5.QtGui import QFont, QColor, QPixmap, QIcon, QBrush, QPalette
-from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve, QRect, QDate, QTimer 
-=======
     QLineEdit, QComboBox, QTextEdit, QMessageBox, QHBoxLayout, QListWidget, QListWidgetItem, QFormLayout, QSpacerItem,
     QDateEdit, QTimeEdit, QDateTimeEdit, QFileDialog, QGroupBox, QStackedWidget, QGridLayout, QScrollArea, QSizePolicy
 )
 from PyQt5.QtGui import QFont, QColor, QPixmap, QIcon, QBrush, QPalette
 from PyQt5.QtCore import Qt, QPropertyAnimation, QEasingCurve, QRect, QDate, QTime, QDateTime, QTimer 
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
 from models import load_events, save_events, load_users, save_users
 from datetime import date, datetime
 
@@ -624,16 +616,10 @@ class EventManagementApp(QMainWindow):
 
         # Event Details Text
         details_label = QLabel(
-<<<<<<< HEAD
-            f"<b>Ημερομηνία:</b> {event['date']}<br>"
-            f"<b>Τοποθεσία:</b> {event['location']}<br>"
-            f"<b>Τύπος:</b> {event['type']}"
-=======
         f"<b>Ημερομηνία:</b> {event['start_date']} - {event['end_date']}<br>"
         f"<b>Ώρα Έναρξης:</b> {event['start_time']}<br>"            
         f"<b>Τοποθεσία:</b> {event['location']}<br>"
         f"<b>Τύπος:</b> {event['type']}"
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         )
         details_label.setStyleSheet("font-size: 14px; color: #333;")
         details_label.setWordWrap(True)  # Ensure text wraps within the widget
@@ -674,12 +660,8 @@ class EventManagementApp(QMainWindow):
         # Event Details
         details_label = QLabel(
             f"<b>Τίτλος:</b> {event['title']}<br>"
-<<<<<<< HEAD
-            f"<b>Ημερομηνία:</b> {event['date']}<br>"
-=======
             f"<b>Ημερομηνία:</b> {event['start_date']} - {event['end_date']}<br>"
             f"<b>Ώρα Έναρξης:</b> {event['start_time']}<br>"
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
             f"<b>Τοποθεσία:</b> {event['location']}<br>"
             f"<b>Τύπος:</b> {event['type']}<br>"
             f"<b>Περιγραφή:</b> {event['description']}"
@@ -716,13 +698,8 @@ class EventManagementApp(QMainWindow):
     
     def apply_filters(self):
         # Get filter values
-<<<<<<< HEAD
-        from_date_filter = self.from_date_filter_edit.date().toString("yyyy-MM-dd") if self.from_date_filter_edit.date().isValid() else None
-        to_date_filter = self.to_date_filter_edit.date().toString("yyyy-MM-dd") if self.to_date_filter_edit.date().isValid() else None
-=======
         from_date_filter = self.from_date_filter_edit.date().toString("dd/MM/yyyy") if self.from_date_filter_edit.date().isValid() else None
         to_date_filter = self.to_date_filter_edit.date().toString("dd/MM/yyyy") if self.to_date_filter_edit.date().isValid() else None
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         location_filter = self.location_filter_combobox.currentText()
         type_filter = self.type_filter_combobox.currentText()
 
@@ -743,11 +720,7 @@ class EventManagementApp(QMainWindow):
         # Filter events
         self.filtered_events = []  # Store filtered events as an instance variable
         for event in self.events:
-<<<<<<< HEAD
-            event_date = event["date"]
-=======
             event_date = event["start_date"]
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
 
             # Debug: Print event details
             print(f"\nChecking Event: {event['title']}")
@@ -995,11 +968,7 @@ class EventManagementApp(QMainWindow):
         self.logoff_btn.show()
 
         # Add private tabs based on user type
-<<<<<<< HEAD
-        if user_type == "Creator":
-=======
         if user_type == "Organizer":
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
             self.add_organizer_tab()
         elif user_type == "Vendor":
             self.add_vendor_tab()
@@ -1043,17 +1012,10 @@ class EventManagementApp(QMainWindow):
             self.tabs.removeTab(self.tabs.indexOf(tab_widget))
 
         # Add private tabs based on user type
-<<<<<<< HEAD
-        if user_type == "Creator":
-            self.add_organizer_tab()
-            i = self.get_tab_index( "Organizer")
-            self.tabs.setCurrentIndex(i)  # Redirect to Creator dashboard
-=======
         if user_type == "Organizer":
             self.add_organizer_tab()
             i = self.get_tab_index( "Organizer")
             self.tabs.setCurrentIndex(i)  # Redirect to Organizer dashboard
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         elif user_type == "Vendor":
             self.add_vendor_tab()
             i = self.get_tab_index( "Vendor")
@@ -1080,11 +1042,7 @@ class EventManagementApp(QMainWindow):
         organizer_tab = QWidget()
         layout_organizer_dashboard = QVBoxLayout()
 
-<<<<<<< HEAD
-        label = QLabel("Δημιουργός Εκδηλώσεων")
-=======
         label = QLabel("Διοργανωτής Εκδηλώσεων")
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         label.setFont(QFont("Helvetica", 20, QFont.Bold))
         label.setStyleSheet("color: #ff6f61;")
         layout_organizer_dashboard.addWidget(label)
@@ -1204,19 +1162,11 @@ class EventManagementApp(QMainWindow):
         event_list_layout = QVBoxLayout(event_list_container)
         event_list_layout.setAlignment(Qt.AlignTop)  # Align items to the top
 
-<<<<<<< HEAD
-        # Add creator-specific content here
-        event_list_layout.addWidget(QLabel("Διαχείριση Εκδηλώσεων"))
-
-        # Add the event list to the container
-        self.create_creators_my_events_tab(event_list_layout)
-=======
         # Add Organizer-specific content here
         event_list_layout.addWidget(QLabel("Διαχείριση Εκδηλώσεων"))
 
         # Add the event list to the container
         self.create_organizers_my_events_tab(event_list_layout)
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
 
         # Set the container as the scroll area's widget
         scroll_area.setWidget(event_list_container)
@@ -1244,11 +1194,7 @@ class EventManagementApp(QMainWindow):
         history_list_layout = QVBoxLayout(history_list_container)
         history_list_layout.setAlignment(Qt.AlignTop)  # Align items to the top
 
-<<<<<<< HEAD
-        # Add creator-specific content here
-=======
         # Add Organizer-specific content here
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         history_list_layout.addWidget(QLabel("Ιστορικό Εκδηλώσεων"))
 
         # Add the event list to the container
@@ -1280,11 +1226,7 @@ class EventManagementApp(QMainWindow):
         similar_events_list_layout = QVBoxLayout(similar_events_list_container)
         similar_events_list_layout.setAlignment(Qt.AlignTop)  # Align items to the top
 
-<<<<<<< HEAD
-        # Add creator-specific content here
-=======
         # Add Organizer-specific content here
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         similar_events_list_layout.addWidget(QLabel("Παρόμοιες Εκδηλώσεις"))
 
         # Add the event list to the container
@@ -1302,37 +1244,22 @@ class EventManagementApp(QMainWindow):
         my_events_tab.setLayout(layout_my_events)
         similar_events_tab.setLayout(layout_similar_events)
         history_tab.setLayout(layout_history)
-<<<<<<< HEAD
-        self.tabs.addTab(organizer_tab, qta.icon("fa5s.user-edit"), "Organizer")  # Add icon to the Creator tab
-        self.tabs.addTab(my_events_tab, qta.icon("fa5s.calendar-alt"), "My Events")  # Add icon to the Creator tab
-        self.tabs.addTab(similar_events_tab, qta.icon("fa5s.calendar-plus"), "Similar Events")  # Add icon to the Creator tab
-        self.tabs.addTab(history_tab, qta.icon("fa5s.history"), "History")  # Add icon to the Creator tab
-=======
         self.tabs.addTab(organizer_tab, qta.icon("fa5s.user-edit"), "Organizer")  # Add icon to the Organizer tab
         self.tabs.addTab(my_events_tab, qta.icon("fa5s.calendar-alt"), "My Events")  # Add icon to the Organizer tab
         self.tabs.addTab(similar_events_tab, qta.icon("fa5s.calendar-plus"), "Similar Events")  # Add icon to the Organizer tab
         self.tabs.addTab(history_tab, qta.icon("fa5s.history"), "History")  # Add icon to the Organizer tab
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         self.private_tabs["Organizer"] = organizer_tab
         self.private_tabs["My Events"] = my_events_tab
         self.private_tabs["Similar Events"] = similar_events_tab
         self.private_tabs["History"] = history_tab
 
-<<<<<<< HEAD
-    def create_creators_my_events_tab(self, layout):
-=======
     def create_organizers_my_events_tab(self, layout):
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         """Display events created by the logged-in user with pagination."""
         if not self.current_user:
             return
 
         # Filter events created by the current user
-<<<<<<< HEAD
-        creator_events = [event for event in self.events if event.get("creator_id") == self.current_user["user_id"]]
-=======
         organizer_events = [event for event in self.events if event.get("organizer_id") == self.current_user["user_id"]]
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
 
         # Clear the layout before adding new widgets
         while layout.count():
@@ -1342,11 +1269,7 @@ class EventManagementApp(QMainWindow):
                 widget.deleteLater()
 
         # Paginate events
-<<<<<<< HEAD
-        total_events = len(creator_events)
-=======
         total_events = len(organizer_events)
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         total_pages = (total_events + self.events_per_page - 1) // self.events_per_page  # Calculate total pages
 
         # Ensure current_page is within valid range
@@ -1355,11 +1278,7 @@ class EventManagementApp(QMainWindow):
         # Get events for the current page
         start_index = (self.current_page - 1) * self.events_per_page
         end_index = start_index + self.events_per_page
-<<<<<<< HEAD
-        paginated_events = creator_events[start_index:end_index]
-=======
         paginated_events = organizer_events[start_index:end_index]
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
 
         # Add event widgets to the layout
         for event in paginated_events:
@@ -1395,17 +1314,10 @@ class EventManagementApp(QMainWindow):
         print(getDate)
         
         # Filter past events created by the current user
-<<<<<<< HEAD
-        creator_history = [
-            history for history in self.events
-            if history.get("creator_id") == self.current_user["user_id"] and 
-            datetime.strptime(history.get("date"), "%Y-%m-%d").date() < getDate
-=======
         organizer_history = [
             history for history in self.events
             if history.get("organizer_id") == self.current_user["user_id"] and 
-            datetime.strptime(history.get("start_date"), "%Y-%m-%d").date() < getDate
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
+            datetime.strptime(history.get("start_date"), "%d/%m/%Y").date() < getDate
         ]
 
         # Clear the layout before adding new widgets
@@ -1425,11 +1337,7 @@ class EventManagementApp(QMainWindow):
         scroll_widget.setLayout(scroll_layout)
         
         # Add event widgets to the scroll layout
-<<<<<<< HEAD
-        for history in creator_history:
-=======
         for history in organizer_history:
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
             event_widget = self.create_event_widget(history, is_list=True)
             scroll_layout.addWidget(event_widget)
         
@@ -1445,11 +1353,7 @@ class EventManagementApp(QMainWindow):
         getDate = datetime.now().date()
         print(getDate)
         # Filter events created by the current user
-<<<<<<< HEAD
-        creator_similar_events = [similar_events for similar_events in self.events if similar_events.get("creator_id") != self.current_user["user_id"] and datetime.strptime(similar_events.get("date"), "%Y-%m-%d").date() >= getDate]
-=======
-        organizer_similar_events = [similar_events for similar_events in self.events if similar_events.get("organizer_id") != self.current_user["user_id"] and datetime.strptime(similar_events.get("start_date"), "%Y-%m-%d").date() >= getDate]
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
+        organizer_similar_events = [similar_events for similar_events in self.events if similar_events.get("organizer_id") != self.current_user["user_id"] and datetime.strptime(similar_events.get("start_date"), "%d/%m/%Y").date() >= getDate]
 
         # Clear the layout before adding new widgets
         while layout.count():
@@ -1477,19 +1381,11 @@ class EventManagementApp(QMainWindow):
         """)
 
         # Add each event to the QListWidget
-<<<<<<< HEAD
-        for event in creator_similar_events:
-            event_name = event.get("title", "Unnamed Event")
-            event_date = event.get("date", "Unknown Date")
-            event_location = event.get("location", "Unknown Location")
-            image_path = event.get("image_path", "default_placeholder.png")  # Default image if none provided
-=======
         for event in organizer_similar_events:
             event_name = event.get("title", "Unnamed Event")
             event_date = event.get("start_date", "Unknown Date")
             event_location = event.get("location", "Unknown Location")
             image_path = event.get("image", "default_placeholder.png")  # Default image if none provided
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
 
             # Create a custom widget for each event
             event_widget = QWidget()
@@ -1523,11 +1419,7 @@ class EventManagementApp(QMainWindow):
     def change_page(self, layout, delta):
         """Change the current page and update the displayed events."""
         self.current_page += delta
-<<<<<<< HEAD
-        self.create_creators_my_events_tab(layout)
-=======
         self.create_organizers_my_events_tab(layout)
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
 
     #endregion
 
@@ -1661,11 +1553,7 @@ class EventManagementApp(QMainWindow):
         attendee_tab.setLayout(layout_attendee_dashboard)
         find_events_tab.setLayout(layout_find_events)
         self.tabs.addTab(attendee_tab, qta.icon("fa5s.user-edit"), "Attendee")  # Add icon to the Attendee tab
-<<<<<<< HEAD
-        self.tabs.addTab(find_events_tab, qta.icon("fa5s.search"), "Find Events")  # Add icon to the Creator tab
-=======
         self.tabs.addTab(find_events_tab, qta.icon("fa5s.search"), "Find Events")  # Add icon to the Organizer tab
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         self.private_tabs["Attendee"] = attendee_tab
         self.private_tabs["Find Events"] = find_events_tab
 
@@ -1675,11 +1563,7 @@ class EventManagementApp(QMainWindow):
         getDate = datetime.now().date()
         print(getDate)
         # Filter events created by the current user
-<<<<<<< HEAD
-        attendee_find_events = [find_events for find_events in self.events if datetime.strptime(find_events.get("date"), "%Y-%m-%d").date() >= getDate]
-=======
-        attendee_find_events = [find_events for find_events in self.events if datetime.strptime(find_events.get("start_date"), "%Y-%m-%d").date() >= getDate]
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
+        attendee_find_events = [find_events for find_events in self.events if datetime.strptime(find_events.get("start_date"), "%d/%m/%Y").date() >= getDate]
 
         # Clear the layout before adding new widgets
         while layout.count():
@@ -1709,15 +1593,9 @@ class EventManagementApp(QMainWindow):
         # Add each event to the QListWidget
         for event in attendee_find_events:
             event_name = event.get("title", "Unnamed Event")
-<<<<<<< HEAD
-            event_date = event.get("date", "Unknown Date")
-            event_location = event.get("location", "Unknown Location")
-            image_path = event.get("image_path", "default_placeholder.png")  # Default image if none provided
-=======
             event_date = event.get("start_date", "Unknown Date")
             event_location = event.get("location", "Unknown Location")
             image_path = event.get("image", "default_placeholder.png")  # Default image if none provided
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
 
             # Create a custom widget for each event
             event_widget = QWidget()
@@ -1791,10 +1669,7 @@ class EventManagementApp(QMainWindow):
 class SignupModal(QWidget):
     def __init__(self, parent):
         super().__init__()
-<<<<<<< HEAD
-=======
         self.users = load_users()
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         self.parent = parent
         self.setWindowTitle("Εγγραφή")
         self.setGeometry(200, 200, 400, 500)  # Increased height for additional fields
@@ -1890,11 +1765,7 @@ class SignupModal(QWidget):
 
         # User type selection
         self.user_type_combobox = QComboBox()
-<<<<<<< HEAD
-        self.user_type_combobox.addItems(["Attendee", "Creator", "Vendor"])
-=======
         self.user_type_combobox.addItems(["Attendee", "Organizer", "Vendor"])
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         self.user_type_combobox.setStyleSheet("""
             padding: 10px;
             border-radius: 5px;
@@ -1990,10 +1861,7 @@ class CreateEventModal(QWidget):
     def __init__(self, parent):
         super().__init__()
         self.parent = parent
-<<<<<<< HEAD
-=======
         self.current_user = parent.current_user
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         self.setWindowTitle("Δημιουργία Νέας Εκδήλωσης")
         self.setGeometry(200, 200, 500, 450)
         self.setStyleSheet("""
@@ -2002,23 +1870,15 @@ class CreateEventModal(QWidget):
             font-family: 'Helvetica';
         """)
 
-<<<<<<< HEAD
-=======
         self.ticket_entries = []  # αποθηκεύει κάθε ticket γραμμή
 
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         # Main layout
         layout = QVBoxLayout()
         self.setLayout(layout)
 
         # Event creation form
-<<<<<<< HEAD
-        form = QFormLayout()
-        layout.addLayout(form)
-=======
         self.form = QFormLayout()
         layout.addLayout(self.form)
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
 
         # Event name input
         self.event_name_entry = QLineEdit()
@@ -2030,15 +1890,6 @@ class CreateEventModal(QWidget):
             font-size: 14px;
             background-color: white;
         """)
-<<<<<<< HEAD
-        form.addRow("Όνομα Εκδήλωσης:", self.event_name_entry)
-
-        # Event date input (date picker)
-        self.event_date_edit = QDateEdit()
-        self.event_date_edit.setDate(QDate.currentDate())  # Set default to today's date
-        self.event_date_edit.setCalendarPopup(True)  # Enable calendar popup
-        self.event_date_edit.setStyleSheet("""
-=======
         self.form.addRow("Όνομα Εκδήλωσης:", self.event_name_entry)
 
         # Event Starting Date input
@@ -2046,20 +1897,12 @@ class CreateEventModal(QWidget):
         self.event_start_date_edit.setDate(QDate.currentDate())  # Set default to today's date
         self.event_start_date_edit.setCalendarPopup(True)  # Enable calendar popup
         self.event_start_date_edit.setStyleSheet("""
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
             padding: 10px;
             border-radius: 5px;
             border: 1px solid #ccc;
             font-size: 14px;
             background-color: white;
         """)
-<<<<<<< HEAD
-        form.addRow("Ημερομηνία:", self.event_date_edit)
-
-        # Event location input (drop-down box)
-        self.event_location_combobox = QComboBox()
-        self.event_location_combobox.addItems(["Αθήνα", "Θεσσαλονίκη", "Πάτρα", "Ηράκλειο"])
-=======
         self.form.addRow("Ημερομηνία Έναρξης:", self.event_start_date_edit)
 
         # Event End Date input
@@ -2091,7 +1934,6 @@ class CreateEventModal(QWidget):
         # Event location input (drop-down box)
         self.event_location_combobox = QComboBox()
         self.event_location_combobox.addItems(["Αθήνα", "Θεσσαλονίκη", "Πάτρα", "Ηράκλειο","Λάρισα","Βόλος","Ιωάννινα","Χανιά","Καλαμάτα","Καβάλα","Αλεξανδρούπολη","Κέρκυρα","Τρίκαλα","Ξάνθη"])
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         self.event_location_combobox.setStyleSheet("""
             padding: 10px;
             border-radius: 5px;
@@ -2099,19 +1941,11 @@ class CreateEventModal(QWidget):
             font-size: 14px;
             background-color: white;
         """)
-<<<<<<< HEAD
-        form.addRow("Τοποθεσία:", self.event_location_combobox)
-
-        # Event type selection
-        self.event_type_combobox = QComboBox()
-        self.event_type_combobox.addItems(["Δημόσιο", "Ιδιωτικό"])
-=======
         self.form.addRow("Τοποθεσία:", self.event_location_combobox)
 
         # Event type selection
         self.event_type_combobox = QComboBox()
         self.event_type_combobox.addItems(["Ιδιωτικό","All-day Festival","Multi-day Festival", "Συναυλία","Κινηματογραφικό", "Επαγγελματικό","Συνέδριο","Διασκέδαση","Αθλητικό","Καλλιτεχνικό","Εκπαιδευτικό","Φιλανθρωπικό","Θρησκευτικό","Οικογενειακό","Διαδικτυακό","Κοινωνικό","Πολιτικό","Εθελοντικό","Εμπορικό","Gaming"])
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         self.event_type_combobox.setStyleSheet("""
             padding: 10px;
             border-radius: 5px;
@@ -2119,11 +1953,6 @@ class CreateEventModal(QWidget):
             font-size: 14px;
             background-color: white;
         """)
-<<<<<<< HEAD
-        form.addRow("Τύπος Εκδήλωσης:", self.event_type_combobox)
-
-        # Event description input
-=======
         self.form.addRow("Τύπος Εκδήλωσης:", self.event_type_combobox)
 
 # --- Ticket Section ---
@@ -2224,7 +2053,6 @@ class CreateEventModal(QWidget):
 ##################################################################################################
 
 ### Event description input#######################################################################
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         self.event_description_entry = QTextEdit()
         self.event_description_entry.setPlaceholderText("Εισάγετε μια περιγραφή για την εκδήλωση")
         self.event_description_entry.setStyleSheet("""
@@ -2234,38 +2062,23 @@ class CreateEventModal(QWidget):
             font-size: 14px;
             background-color: white;
         """)
-<<<<<<< HEAD
-        form.addRow("Περιγραφή:", self.event_description_entry)
-
-=======
         self.form.addRow("Περιγραφή:", self.event_description_entry)
 ###################################################################################################
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         # Event image upload
         self.image_path = None
         self.image_label = QLabel("Δεν έχει επιλεγεί εικόνα")
         self.image_label.setStyleSheet("font-size: 14px; color: #777;")
-<<<<<<< HEAD
-        form.addRow("Εικόνα Εκδήλωσης:", self.image_label)
-
-        upload_btn = QPushButton("Επιλογή Εικόνας")
-=======
         self.image_path = None
         self.image_label = QLabel("Δεν έχει επιλεγεί εικόνα")
         self.image_label.setStyleSheet("font-size: 14px; color: #777;")
 
         upload_btn = QPushButton("Επιλογή Εικόνας")
         upload_btn.setFixedWidth(130)
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         upload_btn.setStyleSheet("""
             QPushButton {
                 background-color: #88b04b;
                 color: white;
-<<<<<<< HEAD
-                padding: 10px 20px;
-=======
                 padding: 8px;
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
                 font-size: 14px;
                 border-radius: 5px;
                 border: none;
@@ -2275,11 +2088,6 @@ class CreateEventModal(QWidget):
             }
         """)
         upload_btn.clicked.connect(self.upload_image)
-<<<<<<< HEAD
-        form.addRow(upload_btn)
-
-        # Buttons
-=======
 
         # Δημιουργία layout που περιλαμβάνει ετικέτα και κουμπί δεξιά
         image_layout = QHBoxLayout()
@@ -2290,7 +2098,6 @@ class CreateEventModal(QWidget):
 ####################################################################################################
 
         #Κλείσιμο
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         button_frame = QWidget()
         button_layout = QHBoxLayout()
 
@@ -2308,11 +2115,6 @@ class CreateEventModal(QWidget):
                 background-color: #524778;
             }
         """)
-<<<<<<< HEAD
-        close_btn.clicked.connect(self.parent.close)
-        button_layout.addWidget(close_btn)
-
-=======
         close_btn.clicked.connect(lambda: (
             QMessageBox.question(
                 self,
@@ -2342,7 +2144,6 @@ class CreateEventModal(QWidget):
         button_layout.addWidget(preview_btn)
 
 ########Δημιουργία########################
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         create_btn = QPushButton("Δημιουργία")
         create_btn.setStyleSheet("""
             QPushButton {
@@ -2363,8 +2164,6 @@ class CreateEventModal(QWidget):
         button_frame.setLayout(button_layout)
         layout.addWidget(button_frame)
 
-<<<<<<< HEAD
-=======
     def add_ticket_entry(self):
         row_widget = QWidget()
         row_layout = QHBoxLayout()
@@ -2425,18 +2224,13 @@ class CreateEventModal(QWidget):
          else:
               QMessageBox.information(self, "Προσοχή", "Πρέπει να υπάρχει τουλάχιστον ένα εισιτήριο.")              
     
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
     def upload_image(self):
         """Open a file dialog to select an image and save it to the images directory."""
         options = QFileDialog.Options()
         file_path, _ = QFileDialog.getOpenFileName(
             self,
             "Επιλογή Εικόνας",
-<<<<<<< HEAD
-            "",
-=======
             "event_images",
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
             "Images (*.png *.jpg *.jpeg *.bmp);;All Files (*)",
             options=options
         )
@@ -2449,14 +2243,6 @@ class CreateEventModal(QWidget):
             # Copy the image to the images directory
             file_name = os.path.basename(file_path)
             save_path = os.path.normpath(os.path.join("event_images", file_name))  # Normalize path
-<<<<<<< HEAD
-            self.image_path = os.path.relpath(save_path)  # Store relative path
-            shutil.copy(file_path, save_path)
-            self.image_path = save_path.replace("\\", "/")  # Ensure forward slashes
-
-            # Store the relative path
-            self.image_path = save_path
-=======
         
             # Αν η πηγή και ο προορισμός είναι ίδιο αρχείο, μην κάνεις copy
             if os.path.abspath(file_path) != os.path.abspath(save_path):
@@ -2464,25 +2250,11 @@ class CreateEventModal(QWidget):
             
              # Αποθήκευση path για μελλοντική χρήση
             self.image_path = save_path.replace("\\", "/")  # Πάντα forward slashes
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
 
             # Display the image preview
             pixmap = QPixmap(save_path)
             self.image_label.setPixmap(pixmap.scaled(200, 200, Qt.KeepAspectRatio))
             self.image_label.setText("")
-<<<<<<< HEAD
-
-    def create_event(self):
-        event_name = self.event_name_entry.text().strip()
-        event_date = self.event_date_edit.date().toString("yyyy-MM-dd")  # Format date as YYYY-MM-DD
-        event_location = self.event_location_combobox.currentText()
-        event_type = self.event_type_combobox.currentText()
-        event_description = self.event_description_entry.toPlainText().strip()
-
-        if not event_name or not event_date or not event_location or not event_type or not event_description:
-            QMessageBox.warning(self, "Σφάλμα", "Παρακαλώ συμπληρώστε όλα τα πεδία.")
-            return
-=======
             
     def preview_event(self):
         # Συλλογή τιμών από τη φόρμα
@@ -2619,19 +2391,10 @@ class CreateEventModal(QWidget):
         if QDate.fromString(event_end_date, "dd/MM/yyyy") < QDate.fromString(event_start_date, "dd/MM/yyyy"):
             QMessageBox.warning(self, "Σφάλμα", "Η ημερομηνία λήξης δεν μπορεί να είναι πριν την έναρξης.")
             return
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
 
         if not self.image_path:
             QMessageBox.warning(self, "Σφάλμα", "Παρακαλώ επιλέξτε μια εικόνα.")
             return
-<<<<<<< HEAD
-
-        # Create new event
-        new_event = {
-            "id": len(self.events) + 1,
-            "title": event_name,
-            "date": event_date,
-=======
         
         if ticket_avail_dt > start_dt:
             QMessageBox.warning(self, "Invalid Input", "Η διαθεσιμότητα εισιτηρίων πρέπει να είναι πριν την έναρξη της εκδήλωσης.")
@@ -2672,25 +2435,15 @@ class CreateEventModal(QWidget):
 
         # Create new event
         new_event = {
-            "id": len(self.parent.events) + 1,
+            "event_id": len(self.parent.events) + 1,
             "title": event_name,
             "start_date": event_start_date,
             "end_date": event_end_date,
             "start_time": event_start_time,
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
             "location": event_location,
             "type": event_type,
             "description": event_description,
             "image": self.image_path,
-<<<<<<< HEAD
-            "creator_id": self.current_user["user_id"],  # Store the creator's user_id
-            "creator": f"{self.current_user['name']} {self.current_user['surname']}"  # Store the creator's name and surname
-        }
-        self.events.append(new_event)
-        save_events(self.events)
-        
-        self.apply_filters()
-=======
             "organizer_id": self.current_user["user_id"],  # Store the Organizer's user_id
             "organizer": f"{self.current_user['name']} {self.current_user['surname']}",  # Store the Organizer's name and surname
             "ticket_types": ticket_types,
@@ -2701,7 +2454,6 @@ class CreateEventModal(QWidget):
         save_events(self.parent.events)
 
         self.parent.apply_filters()
->>>>>>> b8b4998 (Ανανεωμένο ui.py με λειτουργική Δημιουργία Εκδήλωσης.)
         QMessageBox.information(self, "Επιτυχία", "Η εκδήλωση δημιουργήθηκε με επιτυχία!")
         self.close()
 
