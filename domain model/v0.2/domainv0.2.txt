@@ -1,0 +1,208 @@
+🔷 Κλάση User
++ username: String              // Μοναδικό όνομα χρήστη – εμφανίζεται παντού στην πλατφόρμα
++ email: String                 // Email επικοινωνίας – χρειάζεται για ειδοποιήσεις και login
++ role: String                  // Ο ρόλος του χρήστη (Attendee, Organizer, Vendor)
+- createdAt: DateTime           // Ημερομηνία δημιουργίας – μόνο για εσωτερική καταγραφή
+- isActive: boolean             // Αν είναι ενεργός λογαριασμός – χρησιμοποιείται σε έλεγχο συστήματος
+
++ getUsername(): String         // Επιστρέφει το όνομα χρήστη
++ getEmail(): String            // Επιστρέφει το email του χρήστη
++ getRole(): String             // Επιστρέφει τον ρόλο του χρήστη
++ getCreatedAt(): DateTime      // Επιστρέφει την ημερομηνία δημιουργίας του λογαριασμού
++ isActive(): boolean           // Επιστρέφει αν ο χρήστης είναι ενεργός
+
+
+🔷 Κλάση Organizer
++ organizedEvents: List<String>     // Λίστα με IDs εκδηλώσεων που έχει δημιουργήσει ο Organizer
+- reviewsGiven: List<Review>        // Αξιολογήσεις που έχει υποβάλει για Vendors – εσωτερική καταγραφή
+- collaborations: List<Proposal>    // Προτάσεις/συνεργασίες που έχει στείλει σε Vendors
+
++ getOrganizedEvents(): List<String>    // Επιστρέφει τις εκδηλώσεις του Organizer
++ getReviewsGiven(): List<Review>       // Επιστρέφει τις αξιολογήσεις που έχει υποβάλει
++ getCollaborations(): List<Proposal>   // Επιστρέφει τις συνεργασίες με Vendors
+
+
+
+🔷 Κλάση Attendee
++ attendedEvents: List<String>         // Εκδηλώσεις στις οποίες έχει παρευρεθεί – εμφανίζονται στο προφίλ του
++ tickets: List<Ticket>                // Εισιτήρια που έχει αγοράσει – προβολή και διαχείριση από τον ίδιο
+- notifications: List<Notification>    // Ειδοποιήσεις – αποστέλλονται και διαβάζονται μέσω συστήματος
+
++ getAttendedEvents(): List<String>        // Επιστρέφει τις εκδηλώσεις που παρακολούθησε
++ getTickets(): List<Ticket>               // Επιστρέφει τη λίστα των εισιτηρίων του
++ getNotifications(): List<Notification>   // Επιστρέφει τις ειδοποιήσεις που έχει λάβει
+
+
+
+🔷 Κλάση Vendor
++ services: List<VendorService>         // Οι υπηρεσίες που έχει ανεβάσει ο Vendor – προβολή σε organizers
+- proposalsReceived: List<Proposal>     // Προτάσεις συνεργασίας από organizers – εσωτερική επεξεργασία
+- reviewsReceived: List<Review>         // Αξιολογήσεις που έχει λάβει – επεξεργάζεται από backend
+- notifications: List<Notification>     // Ειδοποιήσεις για νέες προτάσεις, αξιολογήσεις κ.λπ.
+
++ getServices(): List<VendorService>          // Επιστρέφει τις υπηρεσίες του Vendor
++ getProposalsReceived(): List<Proposal>      // Επιστρέφει τις προτάσεις που έχει λάβει
++ getReviewsReceived(): List<Review>          // Επιστρέφει τις αξιολογήσεις που έχει λάβει
++ getNotifications(): List<Notification>      // Επιστρέφει τις ειδοποιήσεις του
+
+
+
+
+🔷 Κλάση Event 
++ title: String                   // Τίτλος της εκδήλωσης – εμφανίζεται στο UI
++ description: String             // Περιγραφή – για το κοινό
++ category: String                // Κατηγορία (π.χ. μουσική, αθλητικά)
++ startDateTime: DateTime         // Ημερομηνία και ώρα έναρξης
++ endDateTime: DateTime           // Ημερομηνία και ώρα λήξης
++ location: String                // Τοποθεσία διεξαγωγής
++ status: String                  // Κατάσταση (draft, published, cancelled)
++ ticketTypes: List<TicketType>   // Τύποι εισιτηρίων (VIP, General κ.λπ.)
+- availableSeats: int             // Εσωτερική πληροφορία για κρατήσεις
+- soldSeats: int                  // Πόσα εισιτήρια έχουν πουληθεί – εσωτερικό
++ imageUrl: String                // Εικόνα προώθησης για την κάρτα του event
+
++ getTitle(): String                  // Επιστρέφει τον τίτλο της εκδήλωσης
++ getDescription(): String            // Επιστρέφει την περιγραφή της εκδήλωσης
++ getCategory(): String               // Επιστρέφει την κατηγορία της εκδήλωσης
++ getStartDateTime(): DateTime        // Επιστρέφει την ημερομηνία/ώρα έναρξης
++ getEndDateTime(): DateTime          // Επιστρέφει την ημερομηνία/ώρα λήξης
++ getLocation(): String               // Επιστρέφει την τοποθεσία διεξαγωγής
++ getStatus(): String                 // Επιστρέφει την κατάσταση της εκδήλωσης
++ getTicketTypes(): List<TicketType>  // Επιστρέφει τους διαθέσιμους τύπους εισιτηρίων
++ getAvailableSeats(): int            // Επιστρέφει τον αριθμό διαθέσιμων θέσεων
++ getSoldSeats(): int                 // Επιστρέφει τον αριθμό πωληθέντων εισιτηρίων
++ getImageUrl(): String               // Επιστρέφει το URL εικόνας της εκδήλωσης
+
+
+🔷 Κλάση Ticket
++ type: String               // Ο τύπος εισιτηρίου (π.χ. VIP, General Admission) – είναι δημόσιο γιατί προβάλλεται στον χρήστη
++ price: float               // Η τιμή του εισιτηρίου – δημόσιο για προβολή και υπολογισμό κόστους
+- quantity: int              // Αριθμός εισιτηρίων που αγοράστηκαν – εσωτερική χρήση
+- status: String             // Κατάσταση εισιτηρίου (π.χ. active, cancelled) – αλλάζει από το σύστημα
+- qrCode: String             // Μοναδικός κωδικός QR για check-in – δεν εκτίθεται απευθείας
+- issuedAt: DateTime         // Χρονική στιγμή έκδοσης – για εσωτερικό έλεγχο
+- downloadable: boolean      // Αν επιτρέπεται λήψη του εισιτηρίου – σχετίζεται με πολιτική
+- transferable: boolean      // Αν επιτρέπεται μεταβίβαση του εισιτηρίου
+- transferTarget: String     // Παραλήπτης μεταβίβασης – εσωτερικό πεδίο
+
++ getType(): String               // Επιστρέφει τον τύπο εισιτηρίου
++ getPrice(): float               // Επιστρέφει την τιμή
++ getQuantity(): int              // Επιστρέφει την ποσότητα που αγοράστηκε
++ getStatus(): String             // Επιστρέφει την τρέχουσα κατάσταση
++ getQrCode(): String             // Επιστρέφει τον QR κωδικό για έλεγχο
++ getIssuedAt(): DateTime         // Επιστρέφει την ημερομηνία έκδοσης
++ isDownloadable(): boolean       // Επιστρέφει αν το εισιτήριο είναι downloadable
++ isTransferable(): boolean       // Επιστρέφει αν μπορεί να μεταφερθεί
++ getTransferTarget(): String     // Επιστρέφει τον χρήστη-παραλήπτη της μεταβίβασης
+
+
+
+🔷 Κλάση VendorService
++ title: String                      // Τίτλος της υπηρεσίας (π.χ. “DJ πακέτο”)
++ description: String                // Περιγραφή της υπηρεσίας που προσφέρει ο vendor
++ serviceCategory: String            // Κατηγορία (π.χ. Catering, Lighting, Sound)
++ pricePerDay: float                 // Κόστος παροχής ανά ημέρα/πακέτο
+- minCapacity: int                   // Ελάχιστος αριθμός ατόμων που εξυπηρετεί – για φίλτρα & έλεγχο
+- maxCapacity: int                   // Μέγιστος αριθμός ατόμων που εξυπηρετεί
++ imageUrls: List<String>            // URLs εικόνων/πολυμέσων για προβολή υπηρεσίας
++ availabilityDates: List<Date>      // Ημερομηνίες κατά τις οποίες η υπηρεσία είναι διαθέσιμη
++ rating: float                      // Μέση βαθμολογία υπηρεσίας από organizers
+~ availableForDates: List<Date>      // Υπολογιζόμενο πεδίο διαθεσιμότητας για συγκεκριμένο event
+
++ getTitle(): String                      // Επιστρέφει τον τίτλο της υπηρεσίας
++ getDescription(): String                // Επιστρέφει την περιγραφή της υπηρεσίας
++ getServiceCategory(): String            // Επιστρέφει την κατηγορία της υπηρεσίας
++ getPricePerDay(): float                 // Επιστρέφει την τιμή ανά ημέρα
++ getImageUrls(): List<String>            // Επιστρέφει τις εικόνες προβολής
++ getAvailabilityDates(): List<Date>      // Επιστρέφει τις ημερομηνίες διαθεσιμότητας
++ getRating(): float                      // Επιστρέφει τη μέση βαθμολογία της υπηρεσίας
+~ getAvailableForDates(): List<Date>      // Επιστρέφει δυναμικά τις διαθέσιμες ημερομηνίες ανά event
+
+
+🔷 Κλάση Proposal
+- submittedAt: DateTime             // Ημερομηνία και ώρα υποβολής της πρότασης από τον vendor – εσωτερική πληροφορία
++ status: String                    // Τρέχουσα κατάσταση πρότασης (π.χ. pending, accepted, rejected)
+- respondedAt: DateTime             // Ημερομηνία και ώρα απάντησης από τον organizer
+- cancelledByOrganizer: boolean     // Αν ακυρώθηκε από τον organizer πριν την απάντηση
+
++ getSubmittedAt(): DateTime             // Επιστρέφει την ημερομηνία/ώρα υποβολής της πρότασης
++ getStatus(): String                    // Επιστρέφει την τρέχουσα κατάσταση της πρότασης
++ getRespondedAt(): DateTime             // Επιστρέφει πότε απαντήθηκε η πρόταση
++ isCancelledByOrganizer(): boolean      // Επιστρέφει true αν η πρόταση ακυρώθηκε από τον organizer
+
+
+
+🔷 Κλάση Transaction
++ amount: float                  // Ποσό που πληρώθηκε – πρέπει να εμφανίζεται στον χρήστη
++ paymentMethod: String          // Τρόπος πληρωμής (π.χ. κάρτα, PayPal)
++ paymentStatus: String          // Κατάσταση πληρωμής (π.χ. success, failed)
+- transactionDate: DateTime      // Πότε πραγματοποιήθηκε η πληρωμή – τεχνικό στοιχείο
+- failureReason: String          // Αιτιολογία αποτυχίας – εσωτερικό για logs/υποστήριξη
+
++ getAmount(): float                  // Επιστρέφει το ποσό πληρωμής
++ getPaymentMethod(): String          // Επιστρέφει τη μέθοδο πληρωμής
++ getPaymentStatus(): String          // Επιστρέφει την κατάσταση της πληρωμής
++ getTransactionDate(): DateTime      // Επιστρέφει την ημερομηνία της συναλλαγής
++ getFailureReason(): String          // Επιστρέφει τον λόγο αποτυχίας της συναλλαγής (αν υπάρχει)
+
+
+
+🔷 Κλάση Review
++ rating: int                   // Βαθμολογία (1 έως 5) – δημόσια γιατί εμφανίζεται στο event/vendor
++ comment: String               // Σχόλιο του χρήστη – εμφανίζεται δημόσια
++ submittedAt: DateTime         // Ημερομηνία και ώρα υποβολής – εμφανίζεται δημόσια
+- isFlagged: boolean            // Αν έχει επισημανθεί ως ακατάλληλη – για moderation
+- eventId: String               // Αναγνωριστικό του event – τεχνικό συσχετισμού
+- reviewerId: String            // Χρήστης που υπέβαλε την αξιολόγηση – για backend
+- vendorId: String              // Vendor που αξιολογήθηκε – εσωτερικό συσχετισμού
+- eventRole: String             // Ο ρόλος του vendor στο event (π.χ. DJ, Catering)
+
++ getRating(): int                   // Επιστρέφει τη βαθμολογία
++ getComment(): String               // Επιστρέφει το σχόλιο
++ getSubmittedAt(): DateTime         // Επιστρέφει την ημερομηνία υποβολής
++ isFlagged(): boolean               // Επιστρέφει true αν η αξιολόγηση είναι flagged
++ getEventId(): String               // Επιστρέφει το event στο οποίο έγινε η αξιολόγηση
++ getReviewerId(): String            // Επιστρέφει τον χρήστη που υπέβαλε την αξιολόγηση
++ getVendorId(): String              // Επιστρέφει τον vendor που αξιολογήθηκε
++ getEventRole(): String             // Επιστρέφει τον ρόλο του vendor στο event
+
+
+🔷 Κλάση History
++ actionType: String           // Τύπος ενέργειας (π.χ. “Αγορά Εισιτηρίου”) – εμφανίζεται στο ιστορικό του χρήστη
++ entity: String               // Τύπος οντότητας στην οποία έγινε η ενέργεια (π.χ. Ticket, Event)
++ entityId: String             // Αναγνωριστικό της συγκεκριμένης οντότητας
++ performedAt: DateTime        // Ημερομηνία και ώρα εκτέλεσης της ενέργειας
+- role: String                 // Ρόλος του χρήστη κατά την ενέργεια (π.χ. Attendee, Vendor)
+
++ getActionType(): String      // Επιστρέφει τον τύπο ενέργειας
++ getEntity(): String          // Επιστρέφει την οντότητα στην οποία έγινε η ενέργεια
++ getEntityId(): String        // Επιστρέφει το ID της οντότητας
++ getPerformedAt(): DateTime   // Επιστρέφει την ημερομηνία/ώρα εκτέλεσης
++ getRole(): String            // Επιστρέφει τον ρόλο του χρήστη τη στιγμή της ενέργειας
+
+
+🔷 Κλάση Refund
++ refundStatus: String         // Κατάσταση επιστροφής χρημάτων (π.χ. pending, success, failed) – εμφανίζεται στον χρήστη
++ initiatedBy: String          // Ποιος ξεκίνησε την επιστροφή (Attendee ή Organizer) – εμφανίζεται στον χρήστη
+- refundDate: DateTime         // Ημερομηνία εκκίνησης της επιστροφής – εσωτερικό για tracking
++ refundAmount: float          // Το ποσό που επιστράφηκε – εμφανίζεται στον χρήστη
+
++ getRefundStatus(): String        // Επιστρέφει την κατάσταση επιστροφής
++ getInitiatedBy(): String         // Επιστρέφει ποιος ξεκίνησε την επιστροφή
++ getRefundDate(): DateTime        // Επιστρέφει την ημερομηνία επιστροφής
++ getRefundAmount(): float         // Επιστρέφει το ποσό που επιστράφηκε
+
+
+
+🔷 Κλάση Notification
++ message: String               // Περιεχόμενο της ειδοποίησης (π.χ. “Η πληρωμή ολοκληρώθηκε”)
++ sentAt: DateTime              // Ημερομηνία και ώρα αποστολής της ειδοποίησης
++ isRead: boolean               // Αν έχει διαβαστεί η ειδοποίηση από τον χρήστη
+- relatedEntity: String         // Σχετική οντότητα (π.χ. Event, Ticket) – εσωτερική πληροφορία
+- receiverId: String            // Χρήστης που τη λαμβάνει – τεχνικό συσχετισμού
+
++ getMessage(): String              // Επιστρέφει το περιεχόμενο της ειδοποίησης
++ getSentAt(): DateTime             // Επιστρέφει την ημερομηνία/ώρα αποστολής
++ isRead(): boolean                 // Επιστρέφει αν έχει διαβαστεί
++ getRelatedEntity(): String        // Επιστρέφει την σχετική οντότητα της ειδοποίησης
++ getReceiverId(): String           // Επιστρέφει τον παραλήπτη της ειδοποίησης

@@ -1,0 +1,382 @@
+🔷 Κλάση User
+
+attributes:
++ user_id: int                   // μοναδικό αναγνωριστικό χρήστη
++ name: String                  // μικρό όνομα χρήστη
++ surname: String               // επώνυμο χρήστη
++ email: String                 // email για σύνδεση και επικοινωνία
++ phone: String                 // αριθμός τηλεφώνου
++ password: String              // κρυπτογραφημένος κωδικός πρόσβασης
++ role: String                  // ρόλος χρήστη: Attendee, Organizer ή Vendor
+
+methods:
++ getFullName(): String                             // επιστρέφει το πλήρες όνομα (name + surname)
++ getRole(): String                                 // επιστρέφει τον ρόλο του χρήστη
++ verifyPassword(pwd: String): boolean              // συγκρίνει τον κωδικό με τον αποθηκευμένο
+🔷
+
+🔷 Κλάση Attendee attendedEvents: List<String> → Δε χρειάζεται πια. Αντικαθίσταται από τα tickets + history
+
+attributes:
++ user_id: int                             // αναγνωριστικό χρήστη (κληρονομείται)
++ tickets: List<Ticket>                    // εισιτήρια που έχει αγοράσει
++ cart: Cart                               // καλάθι με εισιτήρια προς αγορά
++ history: List<History>                   // ιστορικό ενεργειών χρήστη
+- notifications: List<Notification>        // ειδοποιήσεις που λαμβάνει
+
+methods:
++ getTickets(): List<Ticket>                                // επιστρέφει τη λίστα εισιτηρίων του
++ getCartSummary(): String                                  // συνοπτική παρουσίαση του καλαθιού
++ addToCart(ticketType: str, quantity: int): void           // προσθέτει εισιτήριο στο καλάθι
++ removeFromCart(index: int): void                          // αφαιρεί εισιτήριο από το καλάθι
++ purchaseTicket(): Purchase                                // ολοκληρώνει την αγορά των εισιτηρίων στο καλάθι
++ cancelTicket(ticketId: int): Refund                       // αιτείται ακύρωση εισιτηρίου
++ getHistory(): List<History>                               // επιστρέφει το ιστορικό του
++ getNotifications(): List<Notification>                    // επιστρέφει τις ειδοποιήσεις του
+🔷
+🔷 Κλάση Organizer
+Το organizedEvents πρέπει να είναι List<Event> και όχι List<String>, αφού έχουμε άμεση αναπαράσταση Event.
+
+Προστίθεται history: List<History> λόγω UI (Organizer History tab) και sequences.
+
+Προσθήκη μεθόδων createEvent(), getHistory() κ.ά., ώστε να καλύπτουν sequence UC1, UC6, test-cases.
+
+attributes:
++ user_id: int                              // αναγνωριστικό χρήστη (κληρονομείται)
++ organizedEvents: List<Event>              // εκδηλώσεις που έχει δημιουργήσει
+- reviewsGiven: List<Review>                // αξιολογήσεις που έχει κάνει σε vendors
+- collaborations: List<Proposal>            // προτάσεις συνεργασίας που έχει στείλει
++ history: List<History>                    // ιστορικό ενεργειών (π.χ. δημιουργία event)
+
+methods:
++ getOrganizedEvents(): List<Event>                             // επιστρέφει τις εκδηλώσεις του
++ createEvent(data: dict): Event                                // δημιουργεί νέα εκδήλωση
++ getReviewsGiven(): List<Review>                               // επιστρέφει αξιολογήσεις που υπέβαλε
++ getCollaborations(): List<Proposal>                           // επιστρέφει προτάσεις που έχει στείλει
++ getHistory(): List<History>                                   // επιστρέφει το ιστορικό ενεργειών
++ rateVendor(vendorId: int, rating: int, comment: String): Review // υποβάλλει αξιολόγηση vendor
+🔷
+
+🔷 Κλάση Vendor
+Προστίθενται μέθοδοι για submitService(), respondToProposal(), σύμφωνα με sequence diagrams.
+
+Η αναπαράσταση services μπορεί να υλοποιείται με add/remove service σε test-case + UI.
+
+attributes:
++ user_id: int                               // αναγνωριστικό χρήστη (κληρονομείται)
++ services: List<VendorService>              // υπηρεσίες που έχει δηλώσει
+- proposalsReceived: List<Proposal>          // προτάσεις συνεργασίας από organizers
+- reviewsReceived: List<Review>              // αξιολογήσεις που έχει λάβει
+- notifications: List<Notification>          // ειδοποιήσεις για νέα events ή απαντήσεις
+
+methods:
++ getServices(): List<VendorService>                       // επιστρέφει τις υπηρεσίες του
++ addService(service: VendorService): void                 // προσθέτει νέα υπηρεσία
++ removeService(serviceId: int): void                      // αφαιρεί υπηρεσία
++ getProposalsReceived(): List<Proposal>                   // επιστρέφει τις προτάσεις που έχει λάβει
++ respondToProposal(proposalId: int, status: String): void // απαντά σε πρόταση συνεργασίας
++ getReviewsReceived(): List<Review>                       // επιστρέφει τις αξιολογήσεις του
++ getNotifications(): List<Notification>                   // επιστρέφει τις ειδοποιήσεις του
+
+
+
+🔷 Κλάση Event 
+startDateTime και endDateTime → διαχωρίζονται σε start_date, end_date, start_time
+
+ticketTypes: List<TicketType> → γίνεται ticket_types: List<TicketOption> (ενσωματωμένη δομή)
+
+Προστίθενται:
+
+ticket_availability_deadline: DateTime (μέχρι πότε μπορεί να αγοραστεί)
+
+ticket_cancel_deadline: DateTime (μέχρι πότε μπορεί να ακυρωθεί)
+
+organizer_id: int (σύνδεση με δημιουργό)
+
+Αφαιρούνται:
+
+availableSeats, soldSeats (δεν υλοποιούνται, υπολογίζονται μέσω εισιτηρίων)
+
+attributes:
++ event_id: int                                      // μοναδικό αναγνωριστικό της εκδήλωσης
++ title: String                                      // τίτλος εκδήλωσης
++ description: String                                // περιγραφή της εκδήλωσης
++ category: String                                   // κατηγορία (μουσική, αθλητικά κ.λπ.)
++ start_date: Date                                   // ημερομηνία έναρξης
++ end_date: Date                                     // ημερομηνία λήξης
++ start_time: Time                                   // ώρα έναρξης
++ location: String                                   // τοποθεσία διεξαγωγής
++ type: String                                       // είδος (Ιδιωτικό, Φεστιβάλ, κ.λπ.)
++ status: String                                     // κατάσταση (draft, published, cancelled)
++ image: String                                      // όνομα αρχείου ή URL εικόνας
++ organizer_id: int                                  // αναγνωριστικό διοργανωτή
++ ticket_types: List<TicketOption>                   // διαθέσιμοι τύποι εισιτηρίων
++ ticket_availability_deadline: DateTime             // προθεσμία αγοράς εισιτηρίων
++ ticket_cancel_deadline: DateTime                   // προθεσμία ακύρωσης εισιτηρίων
+
+methods:
++ getSummary(): String                               // επιστρέφει συνοπτικά στοιχεία εκδήλωσης
++ isActive(): boolean                                // επιστρέφει αν η εκδήλωση είναι σε ενεργή κατάσταση
++ isUpcoming(): boolean                              // επιστρέφει αν είναι μελλοντική εκδήλωση
++ getTicketTypeInfo(): List<TicketOption>            // επιστρέφει τους διαθέσιμους τύπους εισιτηρίων
++ getRemainingTickets(ticketType: str): int          // επιστρέφει πόσα εισιτήρια απομένουν ανά τύπο
+🔷
+
+🔷 Κλάση Ticket
+ΠΡΟΣΤΙΘΕΝΤΑΙ:
+ticket_id: int
+→ Για μοναδική ταυτοποίηση (σε purchase, refund κλπ)
+
+event_id: int και user_id: int
+→ Για τη σύνδεση με Event και Attendee (εμφανίζονται στο tickets.json)
+
+quantity_bought: int
+→ Σωστότερο όνομα αντί για quantity
+
+purchase_date: Date
+→ Υπάρχει στο tickets.json και test-case
+
+refund_requested: boolean, refund_status: String
+→ Προκύπτουν από flows ακύρωσης
+
+used_date: Date
+→ Για μελλοντική επέκταση (χρήση QR, ιστορικό κλπ)
+
+
+attributes:
++ ticket_id: int                             // μοναδικό αναγνωριστικό εισιτηρίου
++ event_id: int                              // αναγνωριστικό εκδήλωσης
++ user_id: int                               // αναγνωριστικό κατόχου
++ ticket_type: String                        // τύπος εισιτηρίου (VIP, Regular, κ.λπ.)
++ price: float                               // τιμή μονάδας
++ quantity_bought: int                       // αριθμός εισιτηρίων που αγοράστηκαν
++ purchase_date: Date                        // ημερομηνία αγοράς
++ status: String                             // valid, cancelled, refunded
++ qr_code: String                            // μοναδικός QR για είσοδο
++ refund_requested: boolean                  // έχει ζητηθεί επιστροφή;
++ refund_status: String                      // κατάσταση επιστροφής
++ used_date: Date                            // ημερομηνία χρήσης του εισιτηρίου
++ downloadable: boolean                      // αν επιτρέπεται να το κατεβάσει ο χρήστης
++ transferable: boolean                      // αν επιτρέπεται να μεταβιβαστεί
++ transfer_target: String                    // χρήστης που θα το λάβει (αν μεταβιβαστεί)
+
+methods:
++ isValid(): boolean                                           // επιστρέφει αν το εισιτήριο είναι έγκυρο
++ markUsed(date: Date): void                                   // καταγράφει χρήση
++ requestRefund(): Refund                                      // δημιουργεί αίτημα επιστροφής
++ isDownloadable(): boolean                                    // επιστρέφει αν μπορεί να γίνει λήψη
++ download(): File                                             // δημιουργεί PDF εισιτηρίου
++ isTransferable(): boolean                                    // επιστρέφει αν επιτρέπεται η μεταβίβαση
++ transferTo(newOwnerId: int): boolean // μεταβιβάζει το εισιτήριο σε νέο κάτοχο
+🔷
+
+
+🔷 Κλάση Transaction
+
+transaction_id: int
+→ Χρειάζεται μοναδικός αριθμός για tracking ή απόδειξη αγοράς.
+
+user_id: int
+→ Για συσχέτιση συναλλαγής με Attendee.
+
+ticket_ids: List<int>
+→ Για να γνωρίζουμε ποια εισιτήρια πληρώθηκαν με αυτή τη συναλλαγή.
+
+isSuccess() και getDetails() → εμφανίζονται σε sequence.
+
+attributes:
++ transaction_id: int                      // μοναδικό αναγνωριστικό συναλλαγής
++ user_id: int                             // αναγνωριστικό χρήστη που πλήρωσε
++ ticket_ids: List<int>                    // λίστα με εισιτήρια που πληρώθηκαν
++ amount: float                            // συνολικό ποσό πληρωμής
++ payment_method: String                   // τρόπος πληρωμής (κάρτα, PayPal κ.λπ.)
++ payment_status: String                   // κατάσταση (success, failed)
++ transaction_date: DateTime               // χρονική στιγμή πληρωμής
++ failure_reason: String                   // αν απέτυχε, γιατί;
+
+methods:
++ isSuccess(): boolean                                  // επιστρέφει true αν η πληρωμή ολοκληρώθηκε επιτυχώς
++ getDetails(): String                                  // επιστρέφει περιγραφή της συναλλαγής
++ getAmount(): float                                    // επιστρέφει το ποσό πληρωμής
++ getPaymentMethod(): String                            // επιστρέφει τη μέθοδο πληρωμής
++ getPaymentStatus(): String                            // επιστρέφει την κατάσταση
++ getTransactionDate(): DateTime                        // επιστρέφει πότε έγινε η συναλλαγή
++ getFailureReason(): String                            // επιστρέφει την αιτία αποτυχίας (αν υπάρχει)
+🔷
+
+🔷 Κλάση Refund
+
+Προστίθεται refund_id: int για ταυτοποίηση της επιστροφής.
+
+Προστίθεται ticket_id: int για συσχέτιση με το εισιτήριο που ακυρώνεται.
+
+Το refund_date γίνεται public, καθώς παρουσιάζεται στον χρήστη (π.χ. πότε ζητήθηκε).
+
+Οι μέθοδοι isCompleted() και getSummary() προστίθενται από sequence και UI feedback.
+
+attributes:
++ refund_id: int                              // μοναδικό αναγνωριστικό επιστροφής
++ ticket_id: int                              // το εισιτήριο στο οποίο αφορά η επιστροφή
++ refund_status: String                       // κατάσταση (pending, approved, rejected)
++ initiated_by: String                        // ποιος την ξεκίνησε (Attendee ή Organizer)
++ refund_date: DateTime                       // πότε ξεκίνησε η διαδικασία επιστροφής
++ refund_amount: float                        // ποσό που επιστράφηκε ή πρόκειται να επιστραφεί
+
+methods:
++ openRefundForm(): void                      // ανοίγει τη φόρμα refund
++ selectRefundOption(option: String): void    // επιλέγει τύπο επιστροφής
++ confirm(): void                              // επιβεβαιώνει το αίτημα refund
++ markAsCancelled(): void                      // ενημερώνει ότι το ticket ακυρώθηκε λόγω refund
++ getRefundStatus(): String                    // επιστρέφει την τρέχουσα κατάσταση
++ getInitiatedBy(): String                     // επιστρέφει τον χρήστη που ξεκίνησε
++ getRefundDate(): DateTime                    // επιστρέφει την ημερομηνία υποβολής
++ getRefundAmount(): float                     // επιστρέφει το ποσό
+🔷
+
+
+
+🔷 Κλάση VendorService
+Προσθήκη service_id: int για ταυτοποίηση σε προτάσεις (Proposal) και χρήση από τον Organizer
+
+Διατήρηση minCapacity, maxCapacity ως λειτουργικά φίλτρα στο UI
+
+Το availableForDates είναι υπολογιζόμενο πεδίο και παραμένει, αλλά ως method
+
+Οι εικόνες υλοποιούνται ως λίστα από paths (List<String>) – μελλοντικά θα μπορούσαν να γίνουν Image object
+
+
+attributes:
++ service_id: int                              // μοναδικό αναγνωριστικό υπηρεσίας
++ title: String                                // τίτλος υπηρεσίας (π.χ. DJ, Catering)
++ description: String                          // περιγραφή παροχής
++ service_category: String                     // κατηγορία (Lighting, Sound, Catering)
++ price_per_day: float                         // κόστος ανά ημέρα
+- min_capacity: int                            // ελάχιστο μέγεθος εξυπηρέτησης
+- max_capacity: int                            // μέγιστο μέγεθος εξυπηρέτησης
++ image_urls: List<String>                     // εικόνες για παρουσίαση
++ availability_dates: List<Date>               // διαθέσιμες ημερομηνίες για κράτηση
++ rating: float                                // μέση βαθμολογία από organizers
+
+methods:
++ getTitle(): String                           // επιστρέφει τον τίτλο
++ getDescription(): String                     // επιστρέφει την περιγραφή
++ getCategory(): String                        // επιστρέφει την κατηγορία
++ getPricePerDay(): float                      // επιστρέφει την τιμή
++ getImageUrls(): List<String>                 // επιστρέφει τις εικόνες
++ checkOverlapDates(): boolean                       // ελέγχει αν υπάρχει σύγκρουση ημερομηνιών
++ generateServicePreview(): String                   // δημιουργεί preview περιγραφής υπηρεσίας
++ getRating(): float                           // επιστρέφει την αξιολόγηση
+🔷
+
+
+
+🔷 Κλάση Review
+🔁 Συγχωνεύσεις:
+Το review μπορεί να αφορά είτε Vendor είτε Event, άρα αντί για vendorId, eventId, χρησιμοποιούμε:
+
+target_type: String → “Event” ή “Vendor”
+
+target_id: int → το ID του αξιολογούμενου
+
+🆕 Προσθήκες:
+review_id: int → μοναδικός αναγνωριστικός αριθμός
+
+reviewer_id: int → το user_id του ατόμου που αξιολόγησε
+
+
+attributes:
++ review_id: int                          // μοναδικό αναγνωριστικό αξιολόγησης
++ rating: int                             // βαθμολογία (1-5)
++ comment: String                         // σχόλιο που προσθέτει ο χρήστης
++ submitted_at: DateTime                  // χρονική στιγμή υποβολής
++ reviewer_id: int                        // χρήστης που υπέβαλε την αξιολόγηση
++ target_type: String                     // "Event" ή "Vendor"
++ target_id: int                          // αναγνωριστικό του event ή vendor που αξιολογήθηκε
+- is_flagged: boolean                     // έχει επισημανθεί για ακαταλληλότητα;
+
+methods:
++ getRating(): int                        // επιστρέφει τη βαθμολογία
++ getComment(): String                    // επιστρέφει το σχόλιο
++ getSubmittedAt(): DateTime              // επιστρέφει πότε υποβλήθηκε
++ isFlagged(): boolean                    // επιστρέφει αν είναι flagged
++ getTarget(): String                     // περιγράφει το target (τύπος + ID)
++ getReviewer(): int                      // επιστρέφει το ID του χρήστη που αξιολόγησε
+🔷
+
+🔷 Κλάση Proposal
+🆕 Προσθήκες:
+proposal_id: int → για μοναδικό προσδιορισμό
+
+event_id: int → αφορά συγκεκριμένο event
+
+vendor_id: int → ο vendor που λαμβάνει την πρόταση
+
+service_id: int → η υπηρεσία για την οποία υποβάλλεται η πρόταση
+
+🔄 Οι μέθοδοι του sequence diagram:
+respondToProposal() → πρέπει να περιλαμβάνεται
+
+getSummary() → χρήση σε UI ή ιστορικό
+
+
+attributes:
++ proposal_id: int                            // μοναδικό αναγνωριστικό πρότασης
++ event_id: int                               // εκδήλωση στην οποία αφορά η πρόταση
++ vendor_id: int                              // vendor που έλαβε την πρόταση
++ service_id: int                             // υπηρεσία για την οποία έγινε η πρόταση
++ status: String                              // κατάσταση πρότασης (pending, accepted, rejected, cancelled)
++ submitted_at: DateTime                      // ημερομηνία και ώρα υποβολής
++ responded_at: DateTime                      // ημερομηνία και ώρα απάντησης
++ cancelled_by_organizer: boolean             // true αν ακυρώθηκε από τον organizer πριν την απάντηση
+
+methods:
++ getSubmittedAt(): DateTime                  // επιστρέφει πότε στάλθηκε
++ getStatus(): String                         // επιστρέφει την κατάσταση
++ getRespondedAt(): DateTime                  // επιστρέφει πότε απαντήθηκε
++ isCancelledByOrganizer(): boolean           // επιστρέφει αν ακυρώθηκε από organizer
++ respond(status: String): void               // ορίζει νέα κατάσταση στην πρόταση
+🔷
+
+
+🔷 Κλάση Notification
+
+🆕 Προσθήκη:
+notification_id: int → μοναδικό αναγνωριστικό (αναγκαίο για tracking/ενέργεια)
+
+⚠️ Σημείωση:
+Οι μέθοδοι actOnNotification() κ.λπ. ανήκουν στον χρήστη, όχι στην ειδοποίηση
+
+attributes:
++ notification_id: int                    // μοναδικό αναγνωριστικό ειδοποίησης
++ message: String                         // περιεχόμενο μηνύματος
++ sent_at: DateTime                       // πότε στάλθηκε
++ is_read: boolean                        // αν έχει διαβαστεί
+- related_entity: String                  // το αντικείμενο στο οποίο αναφέρεται (π.χ. Event, Ticket)
+- receiver_id: int                        // ο χρήστης που τη λαμβάνει
+
+methods:
++ getNotificationDetails(id: int): Notification      // επιστρέφει όλες τις λεπτομέρειες της ειδοποίησης
++ performAction(option: String): void                // εκτελεί την αντίστοιχη ενέργεια ειδοποίησης
++ markAsRead(): void                                 // μαρκάρει την ειδοποίηση ως διαβασμένη
++ executeAction(): void                              // ενεργοποιεί άμεσα την προβλεπόμενη δράση
+
+🔷
+
+🔷 Κλάση History
+attributes:
++ history_id: int                           // μοναδικό αναγνωριστικό καταγραφής
++ user_id: int                              // χρήστης που εκτέλεσε την ενέργεια
++ action_type: String                       // τύπος ενέργειας (π.χ. "Αγορά Εισιτηρίου")
++ entity_type: String                       // τύπος οντότητας (π.χ. Ticket, Event)
++ entity_id: int                            // αναγνωριστικό της οντότητας
++ performed_at: DateTime                    // ημερομηνία/ώρα εκτέλεσης
+
+methods:
++ fetchUserHistory(user_id: int): List<History>         // επιστρέφει όλες τις καταγραφές του χρήστη
++ fetchHistory(): List<History>                         // επιστρέφει όλα τα ιστορικά δεδομένα
++ getFilteredHistory(filters: dict): List<History>      // επιστρέφει φιλτραρισμένες εγγραφές ιστορικού
+🔷
+
+
+
+
