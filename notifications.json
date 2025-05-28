@@ -1,0 +1,90 @@
+{
+    "notifications": [
+        {
+            "notification_id": "notif_20250527204933",
+            "user_id": 3,
+            "title": "Νέα Αξιολόγηση",
+            "message": "Λάβατε νέα αξιολόγηση από τον διοργανωτή John Doe.",
+            "timestamp": "27/05/2025 20:49:33",
+            "read": true,
+            "category": "Service Reviews"
+        },
+        {
+            "notification_id": "notif_20250527212329",
+            "user_id": 1,
+            "title": "Νέα Αξιολόγηση Εκδήλωσης",
+            "message": "Η εκδήλωση 'Test_1 για Org1' έλαβε νέα αξιολόγηση από έναν συμμετέχοντα.",
+            "timestamp": "27/05/2025 21:23:29",
+            "read": true,
+            "category": "Event Reviews",
+            "review_data": {
+                "rating": 3.5,
+                "comments": "Testing: Αξιολόγηση Attendee προς Organizer για Event που έχει ολοκληρωθεί!",
+                "suggestions": "Att1 reviews Org1 on event_id=1",
+                "reviewer_name": "Jack Taylor",
+                "review_type": "event",
+                "event_title": "Test_1 για Org1"
+            }
+        },
+        {
+            "notification_id": "notif_20250527221023",
+            "user_id": 6,
+            "title": "Νέο Αίτημα Συνεργασίας",
+            "message": "Έχετε ένα νέο αίτημα συνεργασίας για την υπηρεσία 'Φωτισμός του Μένιου' από τον διοργανωτή John Doe.",
+            "timestamp": "27/05/2025 22:10:23",
+            "read": true,
+            "category": "Collaboration Requests",
+            "collaboration_request": {
+                "request_id": "req_20250527221022",
+                "organizer_info": {
+                    "id": 1,
+                    "name": "John",
+                    "surname": "Doe",
+                    "email": "org1"
+                },
+                "event_info": {
+                    "id": 2,
+                    "title": "Tesτ_2 για Org1",
+                    "description": "Test για Event που ΔΕΝ εχει γίνει",
+                    "start_date": "30/05/2025",
+                    "end_date": "30/05/2025",
+                    "location": "Αθήνα",
+                    "type": "Ιδιωτικό"
+                },
+                "service_info": {
+                    "id": 3,
+                    "name": "Φωτισμός του Μένιου",
+                    "description": "Επαγγελματικός φωτισμός με σύγχρονο εξοπλισμό.",
+                    "price": "30",
+                    "type": "Φωτισμός"
+                }
+            },
+            "deleted": true
+        },
+        {
+            "notification_id": "notif_20250527221037",
+            "user_id": 1,
+            "title": "Αίτημα Συνεργασίας Εγκρίθηκε! ✅",
+            "message": "Ο vendor Menios Alanis αποδέχτηκε το αίτημα συνεργασίας για την υπηρεσία 'Φωτισμός του Μένιου' στην εκδήλωση 'Tesτ_2 για Org1'.",
+            "timestamp": "27/05/2025 22:10:37",
+            "read": true,
+            "category": "Collaboration Requests",
+            "collaboration_response": {
+                "status": "accepted",
+                "vendor_name": "Menios Alanis",
+                "service_name": "Φωτισμός του Μένιου",
+                "event_title": "Tesτ_2 για Org1",
+                "response_date": "27/05/2025 22:10:37"
+            }
+        },
+        {
+            "notification_id": "notif_20250528184438",
+            "user_id": 2,
+            "title": "Απάντηση σε Αίτημα Μεταφοράς Εισιτηρίων",
+            "message": "Ο χρήστης att2 αποδέχτηκε το αίτημα μεταφοράς εισιτηρίων.",
+            "timestamp": "28/05/2025 18:44:38",
+            "read": false,
+            "category": "Ticket Transfers"
+        }
+    ]
+}

@@ -1,8 +1,8 @@
 [
     {
         "user_id": 1,
-        "email": "qw",
-        "password": "qw",
+        "email": "org1",
+        "password": "12",
         "name": "John",
         "surname": "Doe",
         "type": "Organizer",
@@ -10,17 +10,18 @@
     },
     {
         "user_id": 2,
-        "email": "user2@example.com",
-        "password": "password456",
+        "email": "att1",
+        "password": "12",
         "name": "Jack",
         "surname": "Taylor",
         "type": "Attendee",
-        "phone": "6945674569"
+        "phone": "6945674569",
+        "credit": "76.0"
     },
     {
         "user_id": 3,
-        "email": "user3@example.com",
-        "password": "password789",
+        "email": "vend1",
+        "password": "12",
         "name": "Jane",
         "surname": "Plane",
         "type": "Vendor",
@@ -28,26 +29,26 @@
     },
     {
         "user_id": 4,
-        "email": "test@opopo.com",
-        "password": "123456",
+        "email": "org2",
+        "password": "12",
+        "name": "Org2",
+        "surname": "Org2",
+        "type": "Organizer",
+        "phone": "6945454545"
+    },
+    {
+        "user_id": 5,
+        "email": "att2",
+        "password": "12",
         "name": "test",
         "surname": "test",
         "type": "Attendee",
         "phone": "6945454545"
     },
     {
-        "user_id": 5,
-        "email": "kon.alex95@gmail.com",
-        "password": "123456",
-        "name": "Kostas",
-        "surname": "Alexiou",
-        "type": "Organizer",
-        "phone": "6945454545"
-    },
-    {
         "user_id": 6,
-        "email": "men@gmail.com",
-        "password": "123456",
+        "email": "men",
+        "password": "12",
         "name": "Menios",
         "surname": "Alanis",
         "type": "Vendor",

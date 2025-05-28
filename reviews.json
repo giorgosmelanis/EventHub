@@ -1,0 +1,71 @@
+{
+    "event_reviews": [
+        {
+            "id": 1,
+            "review_type": "event",
+            "rating": 3.5,
+            "comments": "Testing: Αξιολόγηση Attendee προς Organizer για Event που έχει ολοκληρωθεί!",
+            "suggestions": "Att1 reviews Org1 on event_id=1",
+            "created_at": "27/05/2025 21:23",
+            "updated_at": "27/05/2025 21:23",
+            "status": "active",
+            "user": {
+                "id": 2,
+                "name": "Jack",
+                "surname": "Taylor"
+            },
+            "notification_status": {
+                "organizer_notified": false,
+                "vendor_notified": false,
+                "notification_sent_at": null
+            },
+            "metadata": {
+                "client_version": "1.0",
+                "platform": "desktop",
+                "language": "el"
+            },
+            "event_id": 1,
+            "event_data": {
+                "title": "Test_1 για Org1",
+                "organizer_id": 1,
+                "date": "08/05/2025"
+            }
+        }
+    ],
+    "vendor_reviews": [
+        {
+            "id": 1,
+            "review_type": "vendor",
+            "rating": 5,
+            "comments": "Testing: Aξιολόγηση Vendor από Organizer!",
+            "suggestions": "Org1 reviews Vend1. Vend1 shouls receive this review Notification!",
+            "created_at": "27/05/2025 20:49",
+            "updated_at": "27/05/2025 20:49",
+            "status": "active",
+            "user": {
+                "id": 1,
+                "name": "John",
+                "surname": "Doe"
+            },
+            "notification_status": {
+                "organizer_notified": false,
+                "vendor_notified": false,
+                "notification_sent_at": null
+            },
+            "metadata": {
+                "client_version": "1.0",
+                "platform": "desktop",
+                "language": "el"
+            },
+            "vendor_id": 3,
+            "event_id": 1,
+            "service_details": {
+                "service_type": "",
+                "service_date": "27/05/2025"
+            }
+        }
+    ],
+    "metadata": {
+        "last_updated": "27/05/2025 21:23"
+    }
+}

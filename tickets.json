@@ -1,17 +1,54 @@
 [
     {
-            "ticket_id": 1,                     
-            "event_id": 3,                        
-            "user_id": 7,                         
-            "ticket_type": "VIP",                
-            "price": 40.0,                        
-            "quantity_bought": 2,                
-            "purchase_date": "2025-05-06",       
-            "status": "valid",                   
-            "qr_code": "a1b2c3d4",               
-            "transfer_to_user_id": null,         
-            "refund_requested": false,           
-            "refund_status": null,               
-            "used_date": null                    
+        "ticket_id": 1,
+        "event_id": 1,
+        "user_id": 2,
+        "ticket_type": "Zone A",
+        "price": 43.0,
+        "quantity_bought": 2,
+        "purchase_date": "15/01/2024",
+        "status": "used",
+        "qr_code": "a1b2c3d4",
+        "transfer_to_user_id": null,
+        "used_date": "08/05/2025"
+    },
+    {
+        "ticket_id": 2,
+        "event_id": 2,
+        "user_id": 2,
+        "ticket_type": "Early Bird",
+        "price": 26.0,
+        "quantity_bought": 2,
+        "purchase_date": "10/03/2024",
+        "status": "valid",
+        "qr_code": "e5f6g7h8",
+        "transfer_to_user_id": null,
+        "used_date": null
+    },
+    {
+        "ticket_id": 2,
+        "event_id": 2,
+        "user_id": 2,
+        "ticket_type": "VIP",
+        "price": 76.0,
+        "quantity_bought": 2,
+        "purchase_date": "10/03/2024",
+        "status": "valid",
+        "qr_code": "e5f6g7h8",
+        "transfer_to_user_id": null,
+        "used_date": null
+    },
+    {
+        "ticket_id": 2,
+        "event_id": 2,
+        "user_id": 5,
+        "ticket_type": "VIP",
+        "price": 76.0,
+        "quantity_bought": 2,
+        "purchase_date": "10/03/2024",
+        "status": "valid",
+        "qr_code": "e5f6g7h8",
+        "transfer_to_user_id": null,
+        "used_date": null
     }
 ]
