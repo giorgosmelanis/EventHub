@@ -1,3 +1,4 @@
+import datetime
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QFormLayout, QComboBox,
     QLineEdit, QPushButton, QMessageBox, QHBoxLayout, QSpacerItem, QSizePolicy, QDialog,
@@ -6,12 +7,14 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QFont, QPixmap, QIcon
 from PyQt5.QtCore import Qt
 import os
+import json
 
 class TicketPurchaseModal(QWidget):
-    def __init__(self, event, user):
+    def __init__(self, event, user, parent=None):
         super().__init__()
         self.event = event
         self.user = user
+        self.parent_app = parent
         self.setWindowTitle("Αγορά Εισιτηρίου")
         self.setGeometry(300, 300, 600, 600)
         self.setStyleSheet("""
@@ -28,10 +31,20 @@ class TicketPurchaseModal(QWidget):
         layout = QVBoxLayout()
         self.setLayout(layout)
 
+        # Event Title
         title = QLabel(f"Εκδήλωση: {event['title']}")
         title.setFont(QFont("Helvetica", 18, QFont.Bold))
         title.setStyleSheet("color: #ff6f61;")
         layout.addWidget(title, alignment=Qt.AlignCenter)
+
+        # Credit display (if user has credit)
+        user_credit = float(self.user.get("credit", 0))
+        if user_credit > 0:
+            credit_label = QLabel(f"Έχετε πιστωτικό αξίας {user_credit:.2f} € για αγορές εισιτηρίων")
+            credit_label.setFont(QFont("Helvetica", 12))
+            credit_label.setStyleSheet("color: #D91656; padding: 5px;")
+            credit_label.setAlignment(Qt.AlignCenter)
+            layout.addWidget(credit_label)
 
         image_label = QLabel()
         pixmap = QPixmap(event['image'])
@@ -276,7 +289,272 @@ class TicketPurchaseModal(QWidget):
 
     def purchase_ticket(self):
         if not self.cart:
-            QMessageBox.warning(self, "Καλάθι Άδειο", "Δεν έχετε επιλέξει εισιτήρια.")
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Warning)
+            msg.setWindowTitle("Καλάθι Άδειο")
+            msg.setText("Δεν έχετε επιλέξει εισιτήρια.")
+            msg.setStyleSheet("""
+                QMessageBox {
+                    background-color: #f0f0f0;
+                    color: #333333;
+                }
+                QPushButton {
+                    background-color: #D91656;
+                    color: white;
+                    padding: 6px 20px;
+                    border-radius: 3px;
+                    min-width: 80px;
+                }
+                QPushButton:hover {
+                    background-color: #B31145;
+                }
+            """)
+            msg.exec_()
             return
-        QMessageBox.information(self, "Επιτυχία", "Η αγορά ολοκληρώθηκε!")
-        self.close()
+        
+        try:
+            total_cost = sum(item['price'] * item['quantity'] for item in self.cart)
+            user_credit = float(self.user.get('credit', '0'))
+            
+            # If user has credit, ask if they want to use it
+            if user_credit > 0:
+                use_credit_msg = QMessageBox()
+                use_credit_msg.setWindowTitle("Χρήση Πιστωτικού")
+                use_credit_msg.setText(f"Έχετε {user_credit:.2f}€ πιστωτικό, θα θέλατε να πραγματοποιήσετε την αγορά με το υπόλοιπό σας;")
+                use_credit_msg.setStyleSheet("""
+                    QMessageBox {
+                        background-color: #f0f0f0;
+                        color: #333333;
+                    }
+                    QPushButton {
+                        padding: 6px 20px;
+                        border-radius: 3px;
+                        min-width: 80px;
+                    }
+                    QPushButton[text="Ναι"] {
+                        background-color: #D91656;
+                        color: white;
+                    }
+                    QPushButton[text="Ναι"]:hover {
+                        background-color: #B31145;
+                    }
+                    QPushButton[text="Όχι"] {
+                        background-color: #6b5b95;
+                        color: white;
+                    }
+                    QPushButton[text="Όχι"]:hover {
+                        background-color: #524778;
+                    }
+                """)
+                
+                yes_button = QPushButton("Ναι")
+                no_button = QPushButton("Όχι")
+                use_credit_msg.addButton(yes_button, QMessageBox.YesRole)
+                use_credit_msg.addButton(no_button, QMessageBox.NoRole)
+                
+                reply = use_credit_msg.exec_()
+                
+                if reply == 0:  # Yes was clicked
+                    if user_credit >= total_cost:
+                        # Full payment with credit
+                        remaining_credit = user_credit - total_cost
+                        self.update_user_credit(remaining_credit)
+                    else:
+                        # Partial payment with credit
+                        info_msg = QMessageBox()
+                        info_msg.setIcon(QMessageBox.Information)
+                        info_msg.setWindowTitle("Μερική Χρήση Πιστωτικού")
+                        info_msg.setText("Θα χρησιμοποιηθεί όλο το πιστωτικό σας και η διαφορά θα καλυφθεί από εσάς.")
+                        info_msg.setStyleSheet("""
+                            QMessageBox {
+                                background-color: #f0f0f0;
+                                color: #333333;
+                            }
+                            QPushButton {
+                                background-color: #D91656;
+                                color: white;
+                                padding: 6px 20px;
+                                border-radius: 3px;
+                                min-width: 80px;
+                            }
+                            QPushButton:hover {
+                                background-color: #B31145;
+                            }
+                        """)
+                        info_msg.exec_()
+                        
+                        self.update_user_credit(0)  # Set credit to 0
+            
+            # Save tickets to tickets.json
+            if self.save_tickets_to_file():
+                # Update event ticket availability
+                self.update_event_ticket_availability()
+                
+                success_msg = QMessageBox()
+                success_msg.setIcon(QMessageBox.Information)
+                success_msg.setWindowTitle("Επιτυχία")
+                success_msg.setText("Η αγορά ολοκληρώθηκε επιτυχώς!")
+                success_msg.setStyleSheet("""
+                    QMessageBox {
+                        background-color: #f0f0f0;
+                        color: #333333;
+                    }
+                    QPushButton {
+                        background-color: #D91656;
+                        color: white;
+                        padding: 6px 20px;
+                        border-radius: 3px;
+                        min-width: 80px;
+                    }
+                    QPushButton:hover {
+                        background-color: #B31145;
+                    }
+                """)
+                success_msg.exec_()
+                
+                # Get updated event data
+                try:
+                    with open("events.json", "r", encoding="utf-8") as f:
+                        events = json.load(f)
+                        for e in events:
+                            if e["event_id"] == self.event["event_id"]:
+                                updated_event = e
+                                break
+                except Exception as e:
+                    print(f"Error loading updated event data: {str(e)}")
+                    updated_event = self.event
+                
+                # Notify parent app to reload events data and update views
+                if self.parent_app:
+                    if hasattr(self.parent_app, 'reload_events_data'):
+                        self.parent_app.reload_events_data()
+                    if hasattr(self.parent_app, 'update_credit_display'):
+                        self.parent_app.update_credit_display()
+                    # Force refresh of event details with updated data
+                    if hasattr(self.parent_app, 'show_attendee_event_details_in_stack'):
+                        self.parent_app.show_attendee_event_details_in_stack(updated_event)
+                
+                self.close()
+            else:
+                raise Exception("Failed to save tickets")
+                
+        except Exception as e:
+            error_msg = QMessageBox()
+            error_msg.setIcon(QMessageBox.Critical)
+            error_msg.setWindowTitle("Σφάλμα")
+            error_msg.setText(f"Σφάλμα κατά την αγορά: {str(e)}")
+            error_msg.setStyleSheet("""
+                QMessageBox {
+                    background-color: #f0f0f0;
+                    color: #333333;
+                }
+                QPushButton {
+                    background-color: #D91656;
+                    color: white;
+                    padding: 6px 20px;
+                    border-radius: 3px;
+                    min-width: 80px;
+                }
+                QPushButton:hover {
+                    background-color: #B31145;
+                }
+            """)
+            error_msg.exec_()
+
+    def update_user_credit(self, new_credit):
+        """Update user's credit in users.json"""
+        try:
+            with open("users.json", "r", encoding="utf-8") as f:
+                users = json.load(f)
+            
+            for user in users:
+                if user["user_id"] == self.user["user_id"]:
+                    user["credit"] = str(new_credit)  # Store as string
+                    self.user["credit"] = str(new_credit)  # Update in memory
+                    break
+            
+            with open("users.json", "w", encoding="utf-8") as f:
+                json.dump(users, f, indent=4, ensure_ascii=False)
+                
+        except Exception as e:
+            raise Exception(f"Failed to update user credit: {str(e)}")
+
+    def save_tickets_to_file(self):
+        """Save purchased tickets to tickets.json."""
+        try:
+            # Load existing tickets
+            try:
+                with open("tickets.json", "r", encoding="utf-8") as f:
+                    tickets = json.load(f)
+            except (FileNotFoundError, json.JSONDecodeError):
+                tickets = []
+
+            # Get the next ticket ID
+            next_ticket_id = max([t.get("ticket_id", 0) for t in tickets], default=0) + 1
+
+            # For each item in cart
+            for item in self.cart:
+                # Check if user already has tickets of this type for this event
+                existing_ticket = None
+                for ticket in tickets:
+                    if (ticket["event_id"] == self.event["event_id"] and 
+                        ticket["user_id"] == self.user["user_id"] and 
+                        ticket["ticket_type"] == item["type"] and
+                        ticket["status"] == "valid"):
+                        existing_ticket = ticket
+                        break
+
+                if existing_ticket:
+                    # Update existing ticket quantity
+                    existing_ticket["quantity_bought"] += item["quantity"]
+                else:
+                    # Create new ticket
+                    new_ticket = {
+                        "ticket_id": next_ticket_id,
+                        "event_id": self.event["event_id"],
+                        "user_id": self.user["user_id"],
+                        "ticket_type": item["type"],
+                        "quantity_bought": item["quantity"],
+                        "price": item["price"],
+                        "purchase_date": datetime.datetime.now().strftime("%d/%m/%Y %H:%M:%S"),
+                        "status": "valid",
+                        "qr_code": f"TKT-{next_ticket_id}-{self.event['event_id']}-{self.user['user_id']}"
+                    }
+                    tickets.append(new_ticket)
+                    next_ticket_id += 1
+
+            # Save updated tickets
+            with open("tickets.json", "w", encoding="utf-8") as f:
+                json.dump(tickets, f, indent=4, ensure_ascii=False)
+
+            return True
+
+        except Exception as e:
+            print(f"Error saving tickets: {str(e)}")
+            return False
+
+    def update_event_ticket_availability(self):
+        """Update the event's ticket availability in events.json."""
+        # Load events
+        try:
+            with open("events.json", "r", encoding="utf-8") as f:
+                events = json.load(f)
+        except FileNotFoundError:
+            return
+        
+        # Find and update the event
+        for event in events:
+            if event["event_id"] == self.event["event_id"]:
+                # Update ticket quantities based on cart
+                for cart_item in self.cart:
+                    for ticket_type in event.get("ticket_types", []):
+                        if ticket_type["type"] == cart_item["type"]:
+                            ticket_type["total_quantity"] -= cart_item["quantity"]
+                            # Ensure quantity doesn't go below 0
+                            if ticket_type["total_quantity"] < 0:
+                                ticket_type["total_quantity"] = 0
+                break
+        
+        # Save updated events
+        with open("events.json", "w", encoding="utf-8") as f:
+            json.dump(events, f, ensure_ascii=False, indent=4)

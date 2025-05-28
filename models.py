@@ -43,3 +43,20 @@ def load_events():
 def save_events(events):
     """Save events to the JSON file."""
     save_file(EVENTS_FILE, events)
+
+def load_services():
+    """Load services from services.json file."""
+    if os.path.exists("services.json"):
+        try:
+            with open("services.json", "r", encoding='utf-8') as f:
+                return json.load(f)  # Return the entire object with services key
+        except json.JSONDecodeError:
+            print("Error reading services.json. Returning empty structure.")
+            return {"services": []}
+    return {"services": []}
+
+def save_services(services):
+    """Save services to services.json file."""
+    data = {"services": services}  # Wrap services in the correct structure
+    with open("services.json", "w", encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=4)

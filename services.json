@@ -1,0 +1,59 @@
+{
+    "services": [
+        {
+            "service_id": 1,
+            "name": "Premium Catering Service",
+            "type": "Catering",
+            "description": "Παροχή υψηλής ποιότητας catering για εκδηλώσεις. Περιλαμβάνει πλήρες μενού, σερβίρισμα και εξοπλισμό.",
+            "start_date": "01/05/2025",
+            "end_date": "08/05/2025",
+            "pricing_type": "Ανά Άτομο",
+            "price": "45",
+            "min_capacity": "50",
+            "max_capacity": "500",
+            "media_path": "event_images/catering-1.jpg",
+            "vendor_id": 3,
+            "vendor_name": "Jane Plane",
+            "event_id": 1,
+            "event_title": "Test_1 για Org1",
+            "status": "assigned"
+        },
+        {
+            "service_id": 2,
+            "name": "Professional DJ Services",
+            "type": "DJ",
+            "description": "Επαγγελματικές υπηρεσίες DJ με σύγχρονο εξοπλισμό και πλούσια μουσική συλλογή.",
+            "start_date": "01/05/2025",
+            "end_date": "31/12/2025",
+            "pricing_type": "Ανά Ώρα",
+            "price": "100",
+            "min_capacity": "0",
+            "max_capacity": "1000",
+            "media_path": "event_images/dj-image-1.jpg",
+            "vendor_id": 6,
+            "vendor_name": "Menios Alanis",
+            "event_id": null,
+            "event_title": null,
+            "status": "available"
+        },
+        {
+            "service_id": 3,
+            "name": "Φωτισμός του Μένιου",
+            "type": "Φωτισμός",
+            "description": "Επαγγελματικός φωτισμός με σύγχρονο εξοπλισμό.",
+            "start_date": "01/05/2025",
+            "end_date": "31/12/2025",
+            "pricing_type": "Ανά Ημέρα",
+            "price": "30",
+            "min_capacity": "0",
+            "max_capacity": "1000",
+            "media_path": "event_images/lights-1.jpg",
+            "vendor_id": 6,
+            "vendor_name": "Menios Alanis",
+            "event_id": 2,
+            "event_title": null,
+            "status": "assigned",
+            "assigned_date": "27/05/2025 22:10:37"
+        }
+    ]
+}
