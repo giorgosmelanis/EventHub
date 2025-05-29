@@ -16,7 +16,7 @@
         "surname": "Taylor",
         "type": "Attendee",
         "phone": "6945674569",
-        "credit": "76.0"
+        "credit": "336.0"
     },
     {
         "user_id": 3,
@@ -43,7 +43,8 @@
         "name": "test",
         "surname": "test",
         "type": "Attendee",
-        "phone": "6945454545"
+        "phone": "6945454545",
+        "credit": "52.0"
     },
     {
         "user_id": 6,

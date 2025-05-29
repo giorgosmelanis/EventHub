@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QStackedWidget,
     QScrollArea, QGroupBox, QMessageBox, QDialog, QLineEdit, QDialogButtonBox,
-    QGraphicsDropShadowEffect, QComboBox, QSpinBox, QFormLayout
+    QGraphicsDropShadowEffect, QComboBox, QSpinBox, QFormLayout, QFileDialog
 )
 from PyQt5.QtGui import QFont, QPixmap, QColor
 from PyQt5.QtCore import Qt
@@ -652,6 +652,9 @@ class TicketManagementMixin:
             
             # After dialog closes, update the credit display if it exists
             self.update_credit_display()
+            
+            # Refresh event data and UI
+            self.refresh_event_data()
 
         except Exception as e:
             msg = QMessageBox()
@@ -839,9 +842,9 @@ Please present this ticket at the event entrance
             msg.setText(f"You have successfully {status_text} the ticket transfer request.")
             msg.exec_()
             
-            # Refresh tickets display if in My Tickets tab
-            if hasattr(self.parent_app, 'display_my_tickets'):
-                self.parent_app.display_my_tickets()
+            # Refresh tickets display and event data
+            self.display_my_tickets()
+            self.refresh_event_data()
             
         except Exception as e:
             print(f"Error handling transfer response: {str(e)}")
@@ -850,6 +853,23 @@ Please present this ticket at the event entrance
             msg.setWindowTitle("Error")
             msg.setText(f"Error handling transfer response: {str(e)}")
             msg.exec_()
+
+    def refresh_event_data(self):
+        """Refresh event data and update UI."""
+        try:
+            # Reload events from file
+            with open("events.json", "r", encoding="utf-8") as f:
+                self.events = json.load(f)
+            
+            # Update UI if we're in the events tab
+            current_tab = self.tabs.tabText(self.tabs.currentIndex())
+            if current_tab == "Events":
+                self.display_events()
+            elif current_tab == "My Tickets":
+                self.display_my_tickets()
+                
+        except Exception as e:
+            print(f"Error refreshing event data: {str(e)}")
 
 
 class TicketTransferDialog(QDialog):
@@ -999,9 +1019,61 @@ class TicketTransferDialog(QDialog):
             layout.addWidget(ticket_section)
         else:
             # Single ticket transfer
-            single_ticket_info = QLabel(f"Transferring: {self.ticket['ticket_type']} (Quantity: {self.ticket['quantity_bought']})")
-            single_ticket_info.setStyleSheet("font-size: 14px; color: #333; padding: 10px; background-color: #f8f9fa; border-radius: 6px;")
-            layout.addWidget(single_ticket_info)
+            ticket_section = QGroupBox("Select Quantity to Transfer")
+            ticket_section.setStyleSheet("""
+                QGroupBox {
+                    font-size: 16px;
+                    font-weight: bold;
+                    color: #D91656;
+                    border: 2px solid #ddd;
+                    border-radius: 8px;
+                    margin-top: 10px;
+                    padding-top: 10px;
+                }
+                QGroupBox::title {
+                    subcontrol-origin: margin;
+                    left: 10px;
+                    padding: 0 10px 0 10px;
+                }
+            """)
+            ticket_layout = QVBoxLayout(ticket_section)
+            
+            type_layout = QHBoxLayout()
+            
+            # Ticket type label
+            type_label = QLabel(f"{self.ticket['ticket_type']}:")
+            type_label.setStyleSheet("font-weight: bold; color: #333; min-width: 120px;")
+            type_layout.addWidget(type_label)
+            
+            # Available quantity label
+            available_qty = self.ticket['quantity_bought']
+            available_label = QLabel(f"Available: {available_qty}")
+            available_label.setStyleSheet("color: #666; min-width: 100px;")
+            type_layout.addWidget(available_label)
+            
+            # Quantity selector
+            qty_label = QLabel("Transfer:")
+            qty_label.setStyleSheet("color: #333;")
+            type_layout.addWidget(qty_label)
+            
+            self.single_ticket_spinbox = QSpinBox()
+            self.single_ticket_spinbox.setMinimum(1)
+            self.single_ticket_spinbox.setMaximum(available_qty)
+            self.single_ticket_spinbox.setValue(1)
+            self.single_ticket_spinbox.setStyleSheet("""
+                QSpinBox {
+                    padding: 5px;
+                    border: 1px solid #ddd;
+                    border-radius: 4px;
+                    min-width: 60px;
+                }
+            """)
+            type_layout.addWidget(self.single_ticket_spinbox)
+            
+            type_layout.addStretch()
+            ticket_layout.addLayout(type_layout)
+            
+            layout.addWidget(ticket_section)
         
         # Buttons
         button_layout = QHBoxLayout()
@@ -1114,7 +1186,7 @@ class TicketTransferDialog(QDialog):
                 # Single ticket transfer
                 tickets_to_transfer.append({
                     'ticket': self.ticket,
-                    'quantity': self.ticket['quantity_bought']
+                    'quantity': self.single_ticket_spinbox.value()
                 })
             
             print(f"Debug - Tickets to transfer: {len(tickets_to_transfer)}")
@@ -1338,350 +1410,186 @@ class TicketTransferDialog(QDialog):
         except (FileNotFoundError, json.JSONDecodeError):
             return "1"
 
-    def generate_notification_id(self):
-        """Generate a unique notification ID."""
-        try:
-            with open("notifications.json", "r", encoding="utf-8") as f:
-                notifications = json.load(f)
-            
-            if notifications:
-                return max(n["notification_id"] for n in notifications) + 1
-            else:
-                return 1
-        except (FileNotFoundError, json.JSONDecodeError):
-            return 1
-
-
 class TicketPDFPreviewDialog(QDialog):
-    """Enhanced dialog for previewing and downloading ticket PDF with Greek support."""
+    """Dialog for previewing and downloading ticket PDF."""
     
     def __init__(self, ticket, event, parent=None):
         super().__init__(parent)
         self.ticket = ticket
         self.event = event
-        self.parent_app = parent
-        self.setWindowTitle("Ticket Preview")
-        self.setGeometry(200, 200, 600, 700)
+        self.parent = parent
         self.setup_ui()
-        self.generate_preview()
     
     def setup_ui(self):
+        self.setWindowTitle("Ticket Preview")
+        self.setMinimumWidth(600)
+        self.setMinimumHeight(400)
+        
         layout = QVBoxLayout(self)
-        layout.setSpacing(15)
+        layout.setSpacing(20)
         layout.setContentsMargins(20, 20, 20, 20)
         
         # Title
         title = QLabel("Προεπισκόπηση Εισιτηρίου")
-        title.setFont(QFont("Arial", 20, QFont.Bold))
-        title.setStyleSheet("color: #D91656; padding: 15px;")
+        title.setFont(QFont("Helvetica", 18, QFont.Bold))
+        title.setStyleSheet("color: #D91656;")
         title.setAlignment(Qt.AlignCenter)
         layout.addWidget(title)
         
-        # Preview area with scroll
-        self.preview_area = QScrollArea()
-        self.preview_area.setWidgetResizable(True)
-        self.preview_area.setStyleSheet("""
-            QScrollArea {
+        # Ticket Preview Section
+        preview_group = QGroupBox("Στοιχεία Εισιτηρίου")
+        preview_group.setStyleSheet("""
+            QGroupBox {
+                font-size: 14px;
+                font-weight: bold;
+                color: #333;
                 border: 2px solid #ddd;
                 border-radius: 8px;
-                background-color: #f8f9fa;
-            }
-        """)
-        layout.addWidget(self.preview_area)
-        
-        # Buttons
-        button_layout = QHBoxLayout()
-        button_layout.setSpacing(20)
-        
-        # Back button
-        back_btn = QPushButton("Πίσω")
-        back_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #6c757d;
-                color: white;
-                padding: 12px 30px;
-                font-size: 16px;
-                font-weight: bold;
-                border: none;
-                border-radius: 8px;
-                min-width: 120px;
-            }
-            QPushButton:hover {
-                background-color: #5a6268;
-            }
-            QPushButton:pressed {
-                background-color: #545b62;
-            }
-        """)
-        back_btn.clicked.connect(self.close)
-        button_layout.addWidget(back_btn)
-        
-        button_layout.addStretch()
-        
-        # Download button
-        download_btn = QPushButton("Κατεβάστε το Εισιτήριο")
-        download_btn.setStyleSheet("""
-            QPushButton {
-                background-color: #D91656;
-                color: white;
-                padding: 12px 30px;
-                font-size: 16px;
-                font-weight: bold;
-                border: none;
-                border-radius: 8px;
-                min-width: 180px;
-            }
-            QPushButton:hover {
-                background-color: #640D5F;
-            }
-            QPushButton:pressed {
-                background-color: #4a0a47;
-            }
-        """)
-        download_btn.clicked.connect(self.download_pdf)
-        button_layout.addWidget(download_btn)
-        
-        layout.addLayout(button_layout)
-    
-    def generate_preview(self):
-        """Generate and display enhanced ticket preview."""
-        preview_widget = QWidget()
-        preview_widget.setStyleSheet("background-color: white; border-radius: 10px;")
-        layout = QVBoxLayout(preview_widget)
-        layout.setSpacing(20)
-        layout.setContentsMargins(30, 30, 30, 30)
-        
-        # Ticket header with decorative styling
-        header_widget = QWidget()
-        header_widget.setStyleSheet("""
-            QWidget {
-                background: qlineargradient(x1:0, y1:0, x2:1, y2:1, 
-                    stop:0 #D91656, stop:1 #640D5F);
-                border-radius: 15px;
-                padding: 20px;
-            }
-        """)
-        header_layout = QVBoxLayout(header_widget)
-        
-        ticket_title = QLabel("🎫 ΕΙΣΙΤΗΡΙΟ ΕΚΔΗΛΩΣΗΣ 🎫")
-        ticket_title.setFont(QFont("Arial", 24, QFont.Bold))
-        ticket_title.setStyleSheet("color: white; text-align: center;")
-        ticket_title.setAlignment(Qt.AlignCenter)
-        header_layout.addWidget(ticket_title)
-        
-        event_title = QLabel(self.event['title'])
-        event_title.setFont(QFont("Arial", 18, QFont.Bold))
-        event_title.setStyleSheet("color: white; text-align: center; margin-top: 10px;")
-        event_title.setAlignment(Qt.AlignCenter)
-        event_title.setWordWrap(True)
-        header_layout.addWidget(event_title)
-        
-        layout.addWidget(header_widget)
-        
-        # Event image
-        if os.path.exists(self.event.get("image", "")):
-            image_container = QWidget()
-            image_container.setStyleSheet("border: 3px solid #D91656; border-radius: 10px; padding: 5px;")
-            image_layout = QVBoxLayout(image_container)
-            
-            image_label = QLabel()
-            pixmap = QPixmap(self.event["image"])
-            scaled_pixmap = pixmap.scaled(500, 250, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            image_label.setPixmap(scaled_pixmap)
-            image_label.setAlignment(Qt.AlignCenter)
-            image_layout.addWidget(image_label)
-            
-            layout.addWidget(image_container)
-        
-        # Event details section
-        details_section = QGroupBox("Στοιχεία Εκδήλωσης")
-        details_section.setStyleSheet("""
-            QGroupBox {
-                font-size: 16px;
-                font-weight: bold;
-                color: #D91656;
-                border: 2px solid #D91656;
-                border-radius: 10px;
-                margin-top: 15px;
-                padding-top: 15px;
+                margin-top: 10px;
+                padding: 15px;
             }
             QGroupBox::title {
                 subcontrol-origin: margin;
-                left: 15px;
-                padding: 0 10px 0 10px;
-                background-color: white;
+                left: 10px;
+                padding: 0 10px;
             }
         """)
-        details_layout = QVBoxLayout(details_section)
-        details_layout.setSpacing(8)
-        
+        preview_layout = QVBoxLayout(preview_group)
+        # Event Details
         event_details = [
-            ("📅 Ημερομηνία:", f"{self.event['start_date']} - {self.event['end_date']}"),
-            ("🕐 Ώρα:", self.event['start_time']),
-            ("📍 Τοποθεσία:", self.event['location']),
-            ("👤 Διοργανωτής:", self.event.get('organizer', 'N/A'))
+            ("Event:", self.event["title"]),
+            ("Date:", f"{self.event['start_date']} - {self.event['end_date']}"),
+            ("Time:", self.event["start_time"]),
+            ("Location:", self.event["location"]),
+            ("Ticket Type:", self.ticket["ticket_type"]),
+            ("Quantity:", str(self.ticket["quantity_bought"])),
+            ("Price per Ticket:", f"€{self.ticket['price']}"),
+            ("Total Price:", f"€{self.ticket['price'] * self.ticket['quantity_bought']}")
         ]
         
         for label, value in event_details:
             detail_widget = QWidget()
             detail_layout = QHBoxLayout(detail_widget)
-            detail_layout.setContentsMargins(10, 5, 10, 5)
+            detail_layout.setContentsMargins(5, 5, 5, 5)
             
             label_widget = QLabel(label)
-            label_widget.setFont(QFont("Arial", 12, QFont.Bold))
-            label_widget.setStyleSheet("color: #333; min-width: 120px;")
+            label_widget.setStyleSheet("font-weight: bold; color: #333; min-width: 120px;")
             detail_layout.addWidget(label_widget)
             
             value_widget = QLabel(value)
-            value_widget.setFont(QFont("Arial", 12))
             value_widget.setStyleSheet("color: #555;")
             detail_layout.addWidget(value_widget)
             
-            details_layout.addWidget(detail_widget)
+            preview_layout.addWidget(detail_widget)
         
-        layout.addWidget(details_section)
+        layout.addWidget(preview_group)
         
-        # Ticket information section
-        ticket_section = QGroupBox("Στοιχεία Εισιτηρίου")
-        ticket_section.setStyleSheet("""
-            QGroupBox {
-                font-size: 16px;
+        # Buttons
+        button_layout = QHBoxLayout()
+        button_layout.setSpacing(15)
+        
+        # Back button
+        back_button = QPushButton("Πίσω")
+        back_button.setStyleSheet("""
+            QPushButton {
+                background-color: #6c757d;
+                color: white;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 6px;
+                font-size: 14px;
                 font-weight: bold;
-                color: #D91656;
-                border: 2px solid #D91656;
-                border-radius: 10px;
-                margin-top: 15px;
-                padding-top: 15px;
+                min-width: 100px;
             }
-            QGroupBox::title {
-                subcontrol-origin: margin;
-                left: 15px;
-                padding: 0 10px 0 10px;
-                background-color: white;
+            QPushButton:hover {
+                background-color: #5a6268;
             }
         """)
-        ticket_layout = QVBoxLayout(ticket_section)
-        ticket_layout.setSpacing(8)
+        back_button.clicked.connect(self.reject)
         
-        ticket_data = [
-            ['🎟️ Τύπος Εισιτηρίου:', self.ticket['ticket_type']],
-            ['🔢 Ποσότητα:', str(self.ticket['quantity_bought'])],
-            ['💰 Τιμή ανά Εισιτήριο:', f"€{self.ticket['price']}"],
-            ['💳 Συνολική Τιμή:', f"€{self.ticket['price'] * self.ticket['quantity_bought']}"],
-            ['📅 Ημερομηνία Αγοράς:', self.ticket['purchase_date']],
-            ['📊 Κατάσταση:', self.ticket['status'].title()]
-        ]
-        
-        for label, value in ticket_data:
-            detail_widget = QWidget()
-            detail_layout = QHBoxLayout(detail_widget)
-            detail_layout.setContentsMargins(10, 5, 10, 5)
-            
-            label_widget = QLabel(label)
-            label_widget.setFont(QFont("Arial", 12, QFont.Bold))
-            label_widget.setStyleSheet("color: #333; min-width: 150px;")
-            detail_layout.addWidget(label_widget)
-            
-            value_widget = QLabel(value)
-            value_widget.setFont(QFont("Arial", 12))
-            value_widget.setStyleSheet("color: #555;")
-            detail_layout.addWidget(value_widget)
-            
-            ticket_layout.addWidget(detail_widget)
-        
-        layout.addWidget(ticket_section)
-        
-        # QR Code section for valid tickets
-        if self.ticket['status'] == 'valid':
-            qr_section = QGroupBox("QR Code για Είσοδο")
-            qr_section.setStyleSheet("""
-                QGroupBox {
-                    font-size: 16px;
-                    padding: 15px;
-                    border: 1px solid #ddd;
-                    border-radius: 5px;
-                    margin-top: 10px;
-                }
-                QGroupBox::title {
-                    color: #D91656;
-                    padding: 0 10px;
+        # Download button
+        download_button = QPushButton("Download PDF")
+        download_button.setStyleSheet("""
+            QPushButton {
+                background-color: #D91656;
+                color: white;
+                padding: 12px 24px;
+                border: none;
+                border-radius: 6px;
+                font-size: 14px;
+                font-weight: bold;
+                min-width: 100px;
+            }
+            QPushButton:hover {
+                background-color: #640D5F;
                 }
             """)
-            qr_layout = QVBoxLayout(qr_section)
-            
-            qr_container = QWidget()
-            qr_container.setStyleSheet("""
-                QWidget {
-                    border: 3px dashed #D91656;
-                    border-radius: 10px;
-                    background-color: #f8f9fa;
-                    padding: 20px;
-                }
-            """)
-            qr_container_layout = QVBoxLayout(qr_container)
-            
-            qr_label = QLabel(self.ticket['qr_code'])
-            qr_label.setFont(QFont("Courier", 16, QFont.Bold))
-            qr_label.setStyleSheet("color: #333; background-color: white; padding: 15px; border-radius: 5px;")
-            qr_label.setAlignment(Qt.AlignCenter)
-            qr_container_layout.addWidget(qr_label)
-            
-            qr_instruction = QLabel("Παρουσιάστε αυτόν τον κωδικό στην είσοδο της εκδήλωσης")
-            qr_instruction.setFont(QFont("Arial", 10, QFont.StyleItalic))
-            qr_instruction.setStyleSheet("color: #666; text-align: center; margin-top: 10px;")
-            qr_instruction.setAlignment(Qt.AlignCenter)
-            qr_container_layout.addWidget(qr_instruction)
-            
-            qr_layout.addWidget(qr_container)
-            layout.addWidget(qr_section)
+        download_button.clicked.connect(self.download_pdf)
         
-        # Footer
-        footer = QLabel(f"Δημιουργήθηκε στις: {datetime.now().strftime('%d/%m/%Y %H:%M:%S')}")
-        footer.setFont(QFont("Arial", 10, QFont.StyleItalic))
-        footer.setStyleSheet("color: #999; text-align: center; margin-top: 20px;")
-        footer.setAlignment(Qt.AlignCenter)
-        layout.addWidget(footer)
+        button_layout.addWidget(back_button)
+        button_layout.addStretch()
+        button_layout.addWidget(download_button)
         
-        self.preview_area.setWidget(preview_widget)
+        layout.addLayout(button_layout)
     
     def download_pdf(self):
-        """Generate and save PDF with file dialog."""
-        if not REPORTLAB_AVAILABLE:
-            self.download_ticket_text()
-            return
-        
-        # File save dialog
-        from PyQt5.QtWidgets import QFileDialog
-        
-        default_filename = f"ticket_{self.ticket['ticket_id']}_{self.event['title'].replace(' ', '_')}.pdf"
-        file_path, _ = QFileDialog.getSaveFileName(
-            self,
-            "Αποθήκευση Εισιτηρίου",
-            default_filename,
-            "PDF Files (*.pdf);;All Files (*)"
-        )
-        
-        if not file_path:
-            return  # User cancelled
-        
+        """Generate and save the ticket PDF."""
         try:
+            if not REPORTLAB_AVAILABLE:
+                QMessageBox.warning(
+                    self,
+                    "PDF Generation Not Available",
+                    "The PDF generation library (reportlab) is not installed. The ticket will be saved as a text file instead."
+                )
+                self.parent.download_ticket_text(self.ticket, self.event)
+                return
+            
+            # Create default filename
+            default_filename = f"ticket_{self.ticket['ticket_id']}_{self.event['title'].replace(' ', '_')}.pdf"
+            
+            # Open file dialog for user to choose save location
+            file_path, _ = QFileDialog.getSaveFileName(
+                self,
+                "Save Ticket PDF",
+                default_filename,
+                "PDF Files (*.pdf);;All Files (*.*)"
+            )
+            
+            # If user cancels the dialog, return without doing anything
+            if not file_path:
+                return
+                
+            # Add .pdf extension if not present
+            if not file_path.lower().endswith('.pdf'):
+                file_path += '.pdf'
+            
+            # Generate PDF
             self.generate_professional_pdf(file_path)
             
-            # Show success message
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Information)
-            msg.setWindowTitle("Επιτυχής Αποθήκευση")
-            msg.setText(f"Το εισιτήριο αποθηκεύτηκε επιτυχώς:\n{file_path}")
-            msg.exec_()
+            # Open the generated PDF
+            if platform.system() == 'Darwin':  # macOS
+                subprocess.call(('open', file_path))
+            elif platform.system() == 'Windows':  # Windows
+                os.startfile(file_path)
+            else:  # Linux
+                subprocess.call(('xdg-open', file_path))
             
-            self.close()
+            # Show success message
+            QMessageBox.information(
+                self,
+                "Success",
+                f"Ticket has been saved as PDF:\n{file_path}"
+            )
+            
+            self.accept()
             
         except Exception as e:
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Critical)
-            msg.setWindowTitle("Σφάλμα")
-            msg.setText(f"Παρουσιάστηκε σφάλμα κατά τη δημιουργία του PDF: {str(e)}")
-            msg.exec_()
+            QMessageBox.critical(
+                self,
+                "Error",
+                f"Error generating PDF: {str(e)}\nFalling back to text format."
+            )
+            self.parent.download_ticket_text(self.ticket, self.event)
     
     def generate_professional_pdf(self, file_path):
         """Generate a professional PDF with proper Greek character support."""
@@ -1855,433 +1763,3 @@ class TicketPDFPreviewDialog(QDialog):
         
         # Build PDF
         doc.build(story)
-    
-    def download_ticket_text(self):
-        """Fallback method for text file download."""
-        from PyQt5.QtWidgets import QFileDialog
-        
-        default_filename = f"ticket_{self.ticket['ticket_id']}_{self.event['title'].replace(' ', '_')}.txt"
-        file_path, _ = QFileDialog.getSaveFileName(
-            self,
-            "Αποθήκευση Εισιτηρίου",
-            default_filename,
-            "Text Files (*.txt);;All Files (*)"
-        )
-        
-        if not file_path:
-            return
-        
-        try:
-            content = f"""
-🎫 ΕΙΣΙΤΗΡΙΟ ΕΚΔΗΛΩΣΗΣ 🎫
-
-{self.event['title']}
-
-Στοιχεία Εκδήλωσης:
-Ημερομηνία: {self.event['start_date']} - {self.event['end_date']}
-Ώρα: {self.event['start_time']}
-Τοποθεσία: {self.event['location']}
-Διοργανωτής: {self.event.get('organizer', 'N/A')}
-
-Στοιχεία Εισιτηρίου:
-Τύπος Εισιτηρίου: {self.ticket['ticket_type']}
-Ποσότητα: {self.ticket['quantity_bought']}
-Τιμή ανά Εισιτήριο: €{self.ticket['price']}
-Συνολική Τιμή: €{self.ticket['price'] * self.ticket['quantity_bought']}
-Ημερομηνία Αγοράς: {self.ticket['purchase_date']}
-QR Code: {self.ticket['qr_code']}
-
-Παρουσιάστε αυτό το εισιτήριο στην είσοδο της εκδήλωσης
-            """
-            
-            with open(file_path, 'w', encoding='utf-8') as f:
-                f.write(content)
-            
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Information)
-            msg.setWindowTitle("Επιτυχής Αποθήκευση")
-            msg.setText(f"Το εισιτήριο αποθηκεύτηκε επιτυχώς:\n{file_path}")
-            msg.exec_()
-            
-            self.close()
-            
-        except Exception as e:
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Critical)
-            msg.setWindowTitle("Σφάλμα")
-            msg.setText(f"Παρουσιάστηκε σφάλμα κατά την αποθήκευση: {str(e)}")
-            msg.exec_() 
-
-    def show_notification_details(self, notification):
-        """Show detailed view of a notification with possible actions."""
-        # Mark notification as read
-        if not notification.get("read", True):
-            self.parent.mark_notification_as_read(notification["notification_id"])
-
-        # Create detail dialog
-        dialog = QDialog(self)
-        dialog.setWindowTitle("Λεπτομέρειες Ειδοποίησης")
-        dialog.setMinimumWidth(800)
-        dialog.setMinimumHeight(600)
-        dialog.resize(900, 700)  # Set a good default size
-        dialog.setStyleSheet("""
-            QDialog {
-                background-color: #f8f9fa;
-            }
-        """)
-
-        # Create main layout with scroll area
-        main_layout = QVBoxLayout(dialog)
-        main_layout.setContentsMargins(0, 0, 0, 0)
-        
-        # Create scroll area
-        scroll_area = QScrollArea()
-        scroll_area.setWidgetResizable(True)
-        scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
-        scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAsNeeded)
-        
-        # Create content widget
-        content_widget = QWidget()
-        layout = QVBoxLayout(content_widget)
-        layout.setSpacing(20)
-        layout.setContentsMargins(30, 30, 30, 30)
-        
-        # Title
-        title = QLabel(notification["title"])
-        title.setFont(QFont("Segoe UI", 24, QFont.Bold))
-        title.setStyleSheet("color: #D91656; margin-bottom: 20px;")
-        title.setAlignment(Qt.AlignCenter)
-        layout.addWidget(title)
-
-        # Handle ticket transfer request notifications differently
-        if notification.get("type") == "ticket_transfer":
-            try:
-                # Get transfer request data
-                with open("ticket_transfer_requests.json", "r", encoding="utf-8") as f:
-                    transfer_data = json.load(f)
-                
-                request = next((req for req in transfer_data["transfer_requests"] 
-                              if req["request_id"] == notification["transfer_request_id"]), None)
-                
-                if not request:
-                    raise ValueError("Transfer request not found")
-                
-                # Get event details
-                with open("events.json", "r", encoding="utf-8") as f:
-                    events = json.load(f)
-                    event = next((e for e in events if e["event_id"] == request["event"]["event_id"]), None)
-                
-                if not event:
-                    raise ValueError("Event not found")
-                
-                # Event Details Section
-                event_section = QGroupBox("Στοιχεία Εκδήλωσης")
-                event_section.setStyleSheet("""
-                    QGroupBox {
-                        font-size: 16px;
-                        font-weight: bold;
-                        color: #D91656;
-                        border: 2px solid #D91656;
-                        border-radius: 10px;
-                        margin-top: 15px;
-                        padding: 20px;
-                    }
-                    QGroupBox::title {
-                        subcontrol-origin: margin;
-                        left: 15px;
-                        padding: 0 10px 0 10px;
-                        background-color: white;
-                    }
-                """)
-                event_layout = QVBoxLayout(event_section)
-                
-                # Event Image
-                if os.path.exists(event.get("image", "")):
-                    image_container = QWidget()
-                    image_container.setStyleSheet("border: 3px solid #D91656; border-radius: 10px; padding: 5px;")
-                    image_layout = QVBoxLayout(image_container)
-                    
-                    image_label = QLabel()
-                    pixmap = QPixmap(event["image"])
-                    scaled_pixmap = pixmap.scaled(400, 200, Qt.KeepAspectRatio, Qt.SmoothTransformation)
-                    image_label.setPixmap(scaled_pixmap)
-                    image_label.setAlignment(Qt.AlignCenter)
-                    image_layout.addWidget(image_label)
-                    
-                    event_layout.addWidget(image_container)
-                
-                # Event Details
-                details_widget = QWidget()
-                details_layout = QVBoxLayout(details_widget)
-                
-                event_details = [
-                    ("📅 Ημερομηνία:", f"{event['start_date']} - {event['end_date']}"),
-                    ("🕐 Ώρα:", event['start_time']),
-                    ("📍 Τοποθεσία:", event['location']),
-                    ("ℹ️ Τύπος:", event.get('type', 'N/A')),
-                    ("📝 Περιγραφή:", event.get('description', 'N/A'))
-                ]
-                
-                for label, value in event_details:
-                    detail_widget = QWidget()
-                    detail_layout = QHBoxLayout(detail_widget)
-                    detail_layout.setContentsMargins(10, 5, 10, 5)
-                    
-                    label_widget = QLabel(label)
-                    label_widget.setFont(QFont("Arial", 12, QFont.Bold))
-                    label_widget.setStyleSheet("color: #333; min-width: 120px;")
-                    detail_layout.addWidget(label_widget)
-                    
-                    value_widget = QLabel(value)
-                    value_widget.setFont(QFont("Arial", 12))
-                    value_widget.setStyleSheet("color: #555;")
-                    value_widget.setWordWrap(True)
-                    detail_layout.addWidget(value_widget)
-                    
-                    details_layout.addWidget(detail_widget)
-                
-                event_layout.addWidget(details_widget)
-                layout.addWidget(event_section)
-                
-                # Tickets Section
-                tickets_section = QGroupBox("Εισιτήρια προς Μεταφορά")
-                tickets_section.setStyleSheet("""
-                    QGroupBox {
-                        font-size: 16px;
-                        font-weight: bold;
-                        color: #D91656;
-                        border: 2px solid #D91656;
-                        border-radius: 10px;
-                        margin-top: 15px;
-                        padding: 20px;
-                    }
-                    QGroupBox::title {
-                        subcontrol-origin: margin;
-                        left: 15px;
-                        padding: 0 10px 0 10px;
-                        background-color: white;
-                    }
-                """)
-                tickets_layout = QVBoxLayout(tickets_section)
-                
-                total_price = 0
-                for ticket_item in request["tickets"]:
-                    ticket = ticket_item["ticket"]
-                    quantity = ticket_item["quantity"]
-                    subtotal = ticket["price"] * quantity
-                    total_price += subtotal
-                    
-                    ticket_widget = QWidget()
-                    ticket_widget.setStyleSheet("""
-                        background-color: white;
-                        border: 1px solid #ddd;
-                        border-radius: 8px;
-                        padding: 15px;
-                        margin: 5px 0;
-                    """)
-                    ticket_layout = QVBoxLayout(ticket_widget)
-                    
-                    # Ticket Type Header
-                    type_label = QLabel(f"🎫 {ticket['ticket_type']}")
-                    type_label.setFont(QFont("Arial", 14, QFont.Bold))
-                    type_label.setStyleSheet("color: #D91656;")
-                    ticket_layout.addWidget(type_label)
-                    
-                    # Ticket Details
-                    details_text = f"""
-                    Ποσότητα: {quantity}
-                    Τιμή ανά εισιτήριο: €{ticket['price']}
-                    Υποσύνολο: €{subtotal}
-                    """
-                    details_label = QLabel(details_text.strip())
-                    details_label.setStyleSheet("color: #333; font-size: 13px; margin-left: 20px;")
-                    ticket_layout.addWidget(details_label)
-                    
-                    tickets_layout.addWidget(ticket_widget)
-                
-                # Total Price
-                total_widget = QWidget()
-                total_widget.setStyleSheet("""
-                    background-color: #f8f9fa;
-                    border-radius: 8px;
-                    padding: 15px;
-                    margin-top: 10px;
-                """)
-                total_layout = QHBoxLayout(total_widget)
-                
-                total_label = QLabel("Συνολική Αξία:")
-                total_label.setFont(QFont("Arial", 14, QFont.Bold))
-                total_label.setStyleSheet("color: #333;")
-                total_layout.addWidget(total_label)
-                
-                total_amount = QLabel(f"€{total_price}")
-                total_amount.setFont(QFont("Arial", 14, QFont.Bold))
-                total_amount.setStyleSheet("color: #D91656;")
-                total_layout.addWidget(total_amount, alignment=Qt.AlignRight)
-                
-                tickets_layout.addWidget(total_widget)
-                layout.addWidget(tickets_section)
-                
-                # Sender Info Section
-                sender_section = QGroupBox("Στοιχεία Αποστολέα")
-                sender_section.setStyleSheet("""
-                    QGroupBox {
-                        font-size: 16px;
-                        font-weight: bold;
-                        color: #D91656;
-                        border: 2px solid #D91656;
-                        border-radius: 10px;
-                        margin-top: 15px;
-                        padding: 20px;
-                    }
-                    QGroupBox::title {
-                        subcontrol-origin: margin;
-                        left: 15px;
-                        padding: 0 10px 0 10px;
-                        background-color: white;
-                    }
-                """)
-                sender_layout = QVBoxLayout(sender_section)
-                
-                sender_info = QLabel(f"👤 {request['sender']['name']} {request['sender']['surname']}")
-                sender_info.setFont(QFont("Arial", 12))
-                sender_info.setStyleSheet("color: #333;")
-                sender_layout.addWidget(sender_info)
-                
-                layout.addWidget(sender_section)
-                
-                # Action Buttons
-                button_widget = QWidget()
-                button_widget.setStyleSheet("background-color: #f8f9fa; padding: 20px;")
-                button_layout = QHBoxLayout(button_widget)
-                button_layout.setContentsMargins(30, 10, 30, 20)
-                
-                # Back Button
-                back_btn = QPushButton("Πίσω")
-                back_btn.setStyleSheet("""
-                    QPushButton {
-                        background-color: #6b5b95;
-                        color: white;
-                        padding: 12px 30px;
-                        border-radius: 8px;
-                        font-size: 14px;
-                        font-weight: bold;
-                        min-width: 120px;
-                    }
-                    QPushButton:hover {
-                        background-color: #524778;
-                    }
-                """)
-                back_btn.clicked.connect(dialog.close)
-                button_layout.addWidget(back_btn)
-                
-                # Reject Button
-                reject_btn = QPushButton("Απόρριψη")
-                reject_btn.setStyleSheet("""
-                    QPushButton {
-                        background-color: #dc3545;
-                        color: white;
-                        padding: 12px 30px;
-                        border-radius: 8px;
-                        font-size: 14px;
-                        font-weight: bold;
-                        min-width: 120px;
-                    }
-                    QPushButton:hover {
-                        background-color: #c82333;
-                    }
-                """)
-                reject_btn.clicked.connect(lambda: [
-                    self.parent.handle_transfer_response(notification, False),
-                    dialog.close()
-                ])
-                button_layout.addWidget(reject_btn)
-                
-                # Accept Button
-                accept_btn = QPushButton("Αποδοχή")
-                accept_btn.setStyleSheet("""
-                    QPushButton {
-                        background-color: #28a745;
-                        color: white;
-                        padding: 12px 30px;
-                        border-radius: 8px;
-                        font-size: 14px;
-                        font-weight: bold;
-                        min-width: 120px;
-                    }
-                    QPushButton:hover {
-                        background-color: #218838;
-                    }
-                """)
-                accept_btn.clicked.connect(lambda: [
-                    self.parent.handle_transfer_response(notification, True),
-                    dialog.close()
-                ])
-                button_layout.addWidget(accept_btn)
-                
-                layout.addWidget(button_widget)
-                
-            except Exception as e:
-                print(f"Error creating ticket transfer details: {str(e)}")
-                error_label = QLabel(f"Error: {str(e)}")
-                error_label.setStyleSheet("color: red;")
-                layout.addWidget(error_label)
-        else:
-            # Regular notification display
-            message_widget = QWidget()
-            message_layout = QVBoxLayout(message_widget)
-            message_layout.setContentsMargins(0, 0, 0, 0)
-            
-            message_title = QLabel("Μήνυμα:")
-            message_title.setFont(QFont("Segoe UI", 14, QFont.Bold))
-            message_title.setStyleSheet("color: #2c3e50; margin-bottom: 10px;")
-            message_layout.addWidget(message_title)
-            
-            message = QLabel(notification["message"])
-            message.setWordWrap(True)
-            message.setStyleSheet("""
-                color: #34495e; 
-                font-size: 15px; 
-                line-height: 1.6; 
-                padding: 15px; 
-                background-color: #f8f9fa; 
-                border-radius: 8px;
-                border: 1px solid #e9ecef;
-            """)
-            message_layout.addWidget(message)
-            
-            layout.addWidget(message_widget)
-            
-            # Close button for regular notifications
-            button_widget = QWidget()
-            button_widget.setStyleSheet("background-color: #f8f9fa; padding: 20px;")
-            button_layout = QHBoxLayout(button_widget)
-            button_layout.setContentsMargins(30, 10, 30, 20)
-            
-            close_btn = QPushButton("Πίσω")
-            close_btn.setStyleSheet("""
-                QPushButton {
-                    background-color: #6b5b95;
-                    color: white;
-                    padding: 12px 30px;
-                    border-radius: 8px;
-                    font-size: 14px;
-                    font-weight: bold;
-                    min-width: 120px;
-                }
-                QPushButton:hover {
-                    background-color: #524778;
-                }
-            """)
-            close_btn.clicked.connect(dialog.close)
-            button_layout.addStretch()
-            button_layout.addWidget(close_btn)
-            button_layout.addStretch()
-            
-            layout.addWidget(button_widget)
-        
-        # Set up scroll area
-        scroll_area.setWidget(content_widget)
-        main_layout.addWidget(scroll_area)
-        
-        dialog.exec_()

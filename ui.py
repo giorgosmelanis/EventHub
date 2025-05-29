@@ -5725,200 +5725,98 @@ class NotificationsTab(QWidget):
         # Message
         message = QLabel(notification["message"])
         message.setWordWrap(True)
-        message.setStyleSheet("font-size: 16px; color: #333; margin-bottom: 20px;")
+        message.setStyleSheet("font-size: 16px; color: #333; line-height: 1.4;")
+        message.setAlignment(Qt.AlignCenter)
         layout.addWidget(message)
 
-        # Flag to track if action buttons were added
+        # Add action buttons based on notification type
         action_buttons_added = False
 
-        # Handle different notification types
-        if notification.get("category") == "Collaboration Requests":
-            collab_data = notification.get("collaboration_request", {})
-            if collab_data:
-                # Event Details Section
-                event_info = collab_data.get("event_info", {})
-                if event_info:
-                    event_section = QGroupBox("Στοιχεία Εκδήλωσης")
-                    event_section.setStyleSheet("""
-                        QGroupBox {
-                            font-size: 16px;
+        if notification.get("type") == "ticket_transfer":
+            # Check if this is a pending transfer request
+            try:
+                with open("ticket_transfer_requests.json", "r", encoding="utf-8") as f:
+                    transfer_data = json.load(f)
+                    request = next((req for req in transfer_data["transfer_requests"] 
+                                  if req["request_id"] == notification.get("transfer_request_id") 
+                                  and req["status"] == "pending"), None)
+                    if request:
+                        # Add action buttons
+                        buttons_widget = QWidget()
+                        buttons_widget.setStyleSheet("background-color: #f8f9fa; padding: 15px; border-radius: 10px;")
+                        buttons_layout = QHBoxLayout(buttons_widget)
+                        buttons_layout.setSpacing(15)
+
+                        # Back button (grey)
+                        back_btn = QPushButton("Πίσω")
+                        back_btn.setStyleSheet("""
+                            QPushButton {
+                                background-color: #6c757d;
+                                color: white;
+                                padding: 12px 25px;
+                                border-radius: 8px;
+                                font-size: 14px;
                             font-weight: bold;
-                            color: #D91656;
-                            border: 2px solid #D91656;
-                            border-radius: 10px;
-                            margin-top: 15px;
-                            padding: 20px;
-                        }
-                        QGroupBox::title {
-                            subcontrol-origin: margin;
-                            left: 15px;
-                            padding: 0 10px 0 10px;
-                            background-color: white;
+                                min-width: 100px;
+                            }
+                            QPushButton:hover {
+                                background-color: #5a6268;
                         }
                     """)
-                    event_layout = QVBoxLayout(event_section)
-                    
-                    event_details = [
-                        ("📅 Ημερομηνία:", f"{event_info.get('start_date', 'N/A')} - {event_info.get('end_date', 'N/A')}"),
-                        ("📍 Τοποθεσία:", event_info.get('location', 'N/A')),
-                        ("ℹ️ Τύπος:", event_info.get('type', 'N/A')),
-                        ("📝 Περιγραφή:", event_info.get('description', 'N/A'))
-                    ]
-                    
-                    for label, value in event_details:
-                        detail_widget = QWidget()
-                        detail_layout = QHBoxLayout(detail_widget)
-                        detail_layout.setContentsMargins(10, 5, 10, 5)
-                        
-                        label_widget = QLabel(label)
-                        label_widget.setFont(QFont("Arial", 12, QFont.Bold))
-                        label_widget.setStyleSheet("color: #333; min-width: 120px;")
-                        detail_layout.addWidget(label_widget)
-                        
-                        value_widget = QLabel(value)
-                        value_widget.setFont(QFont("Arial", 12))
-                        value_widget.setStyleSheet("color: #555;")
-                        value_widget.setWordWrap(True)
-                        detail_layout.addWidget(value_widget)
-                        
-                        event_layout.addWidget(detail_widget)
-                    
-                    layout.addWidget(event_section)
+                        back_btn.clicked.connect(dialog.close)
 
-                # Service Details Section
-                service_info = collab_data.get("service_info", {})
-                if service_info:
-                    service_section = QGroupBox("Στοιχεία Υπηρεσίας")
-                    service_section.setStyleSheet("""
-                        QGroupBox {
-                            font-size: 16px;
+                        # Reject button (red)
+                        reject_btn = QPushButton("Απόρριψη")
+                        reject_btn.setStyleSheet("""
+                            QPushButton {
+                                background-color: #dc3545;
+                                color: white;
+                                padding: 12px 25px;
+                                border-radius: 8px;
+                                font-size: 14px;
                             font-weight: bold;
-                            color: #D91656;
-                            border: 2px solid #D91656;
-                            border-radius: 10px;
-                            margin-top: 15px;
-                            padding: 20px;
-                        }
-                        QGroupBox::title {
-                            subcontrol-origin: margin;
-                            left: 15px;
-                            padding: 0 10px 0 10px;
-                            background-color: white;
+                                min-width: 100px;
+                            }
+                            QPushButton:hover {
+                                background-color: #c82333;
                         }
                     """)
-                    service_layout = QVBoxLayout(service_section)
-                    
-                    service_details = [
-                        ("🔧 Όνομα Υπηρεσίας:", service_info.get('name', 'N/A')),
-                        ("📋 Τύπος:", service_info.get('type', 'N/A')),
-                        ("💰 Τιμή:", f"€{service_info.get('price', 'N/A')}"),
-                        ("📝 Περιγραφή:", service_info.get('description', 'N/A'))
-                    ]
-                    
-                    for label, value in service_details:
-                        detail_widget = QWidget()
-                        detail_layout = QHBoxLayout(detail_widget)
-                        detail_layout.setContentsMargins(10, 5, 10, 5)
-                        
-                        label_widget = QLabel(label)
-                        label_widget.setFont(QFont("Arial", 12, QFont.Bold))
-                        label_widget.setStyleSheet("color: #333; min-width: 150px;")
-                        detail_layout.addWidget(label_widget)
-                        
-                        value_widget = QLabel(value)
-                        value_widget.setFont(QFont("Arial", 12))
-                        value_widget.setStyleSheet("color: #555;")
-                        value_widget.setWordWrap(True)
-                        detail_layout.addWidget(value_widget)
-                        
-                        service_layout.addWidget(detail_widget)
-                    
-                    layout.addWidget(service_section)
+                        reject_btn.clicked.connect(lambda: [
+                            self.parent.handle_transfer_response(notification, False),
+                            dialog.close(),
+                            self.load_notifications()
+                        ])
 
-                # Add action buttons if this is a pending request and user is a vendor
-                request_id = collab_data.get("request_id")
-                if request_id:
-                    with open("collaboration_requests.json", "r") as f:
-                        data = json.load(f)
-                        request = next((r for r in data["requests"] if r["request_id"] == request_id), None)
-                        if request and request["status"] == "pending" and self.parent.current_user.get("type") == "vendor":
-                            self.add_collaboration_actions(layout, notification, dialog)
-                            action_buttons_added = True
-
-        elif notification.get("type") == "ticket_transfer":
-            # ... existing ticket transfer handling code ...
-            pass
-
-        # Add review details if present
-        if "review_data" in notification:
-            review_data = notification["review_data"]
-            
-            # Create review details section
-            review_section = QGroupBox("Λεπτομέρειες Αξιολόγησης")
-            review_section.setStyleSheet("""
-                QGroupBox {
-                    font-size: 16px;
+                        # Accept button (green)
+                        accept_btn = QPushButton("Αποδοχή")
+                        accept_btn.setStyleSheet("""
+                            QPushButton {
+                                background-color: #28a745;
+                                color: white;
+                                padding: 12px 25px;
+                                border-radius: 8px;
+                                font-size: 14px;
                     font-weight: bold;
-                    color: #D91656;
-                    border: 2px solid #D91656;
-                    border-radius: 10px;
-                    margin-top: 15px;
-                    padding: 20px;
-                }
-                QGroupBox::title {
-                    subcontrol-origin: margin;
-                    left: 15px;
-                    padding: 0 10px 0 10px;
-                    background-color: white;
+                                min-width: 100px;
+                            }
+                            QPushButton:hover {
+                                background-color: #218838;
                 }
             """)
-            review_layout = QVBoxLayout(review_section)
-            
-            # Rating with stars
-            rating_widget = QWidget()
-            rating_layout = QHBoxLayout(rating_widget)
-            rating_layout.setContentsMargins(0, 5, 0, 0)
-            
-            rating_label = QLabel("Βαθμολογία:")
-            rating_label.setStyleSheet("color: #333; font-size: 14px; font-weight: bold;")
-            rating_layout.addWidget(rating_label)
-            
-            # Create star display
-            stars_text = "★" * int(review_data.get("rating", 0)) + "☆" * (5 - int(review_data.get("rating", 0)))
-            stars_label = QLabel(stars_text)
-            stars_label.setStyleSheet("color: #FFD700; font-size: 18px;")
-            rating_layout.addWidget(stars_label)
-            
-            rating_value = QLabel(f"({review_data.get('rating', 0)}/5)")
-            rating_value.setStyleSheet("color: #333; font-size: 14px;")
-            rating_layout.addWidget(rating_value)
-            
-            rating_layout.addStretch()
-            review_layout.addWidget(rating_widget)
-            
-            # Comments section
-            if review_data.get("comments"):
-                comments_label = QLabel("Σχόλια:")
-                comments_label.setStyleSheet("color: #333; font-size: 14px; font-weight: bold; margin-top: 15px;")
-                review_layout.addWidget(comments_label)
-                
-                comments = QLabel(review_data["comments"])
-                comments.setWordWrap(True)
-                comments.setStyleSheet("color: #555; font-size: 14px; background-color: #f8f8f8; padding: 10px; border-radius: 5px;")
-                review_layout.addWidget(comments)
-            
-            # Suggestions section
-            if review_data.get("suggestions"):
-                suggestions_label = QLabel("Προτάσεις για βελτίωση:")
-                suggestions_label.setStyleSheet("color: #333; font-size: 14px; font-weight: bold; margin-top: 15px;")
-                review_layout.addWidget(suggestions_label)
-                
-                suggestions = QLabel(review_data["suggestions"])
-                suggestions.setWordWrap(True)
-                suggestions.setStyleSheet("color: #555; font-size: 14px; background-color: #f8f8f8; padding: 10px; border-radius: 5px;")
-                review_layout.addWidget(suggestions)
-            
-            layout.addWidget(review_section)
+                        accept_btn.clicked.connect(lambda: [
+                            self.parent.handle_transfer_response(notification, True),
+                            dialog.close(),
+                            self.load_notifications()
+                        ])
+
+                        buttons_layout.addWidget(back_btn)
+                        buttons_layout.addStretch()
+                        buttons_layout.addWidget(reject_btn)
+                        buttons_layout.addWidget(accept_btn)
+                        layout.addWidget(buttons_widget)
+                        action_buttons_added = True
+            except Exception as e:
+                print(f"Error adding transfer action buttons: {e}")
 
         # Add back button only if no action buttons were added
         if not action_buttons_added:

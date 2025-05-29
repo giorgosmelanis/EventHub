@@ -50,5 +50,38 @@
         "qr_code": "e5f6g7h8",
         "transfer_to_user_id": null,
         "used_date": null
+    },
+    {
+        "ticket_id": 3,
+        "event_id": 4,
+        "user_id": 2,
+        "ticket_type": "Early Bird",
+        "quantity_bought": 50,
+        "price": 26.0,
+        "purchase_date": "29/05/2025 22:59:04",
+        "status": "valid",
+        "qr_code": "TKT-3-4-2"
+    },
+    {
+        "ticket_id": 3,
+        "event_id": 4,
+        "user_id": 5,
+        "ticket_type": "Early Bird",
+        "quantity_bought": 5,
+        "price": 26.0,
+        "purchase_date": "29/05/2025 22:59:04",
+        "status": "valid",
+        "qr_code": "TKT-3-4-2"
+    },
+    {
+        "ticket_id": 3,
+        "event_id": 4,
+        "user_id": 5,
+        "ticket_type": "Early Bird",
+        "quantity_bought": 10,
+        "price": 26.0,
+        "purchase_date": "29/05/2025 22:59:04",
+        "status": "valid",
+        "qr_code": "TKT-3-4-2"
     }
 ]

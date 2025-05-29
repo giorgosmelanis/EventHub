@@ -289,101 +289,33 @@ class TicketPurchaseModal(QWidget):
 
     def purchase_ticket(self):
         if not self.cart:
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Warning)
-            msg.setWindowTitle("Καλάθι Άδειο")
-            msg.setText("Δεν έχετε επιλέξει εισιτήρια.")
-            msg.setStyleSheet("""
-                QMessageBox {
-                    background-color: #f0f0f0;
-                    color: #333333;
-                }
-                QPushButton {
-                    background-color: #D91656;
-                    color: white;
-                    padding: 6px 20px;
-                    border-radius: 3px;
-                    min-width: 80px;
-                }
-                QPushButton:hover {
-                    background-color: #B31145;
-                }
-            """)
-            msg.exec_()
+            QMessageBox.warning(self, "Empty Cart", "Please add tickets to your cart before purchasing.")
             return
         
         try:
-            total_cost = sum(item['price'] * item['quantity'] for item in self.cart)
-            user_credit = float(self.user.get('credit', '0'))
+            # Calculate total price
+            total_price = sum(item["price"] * item["quantity"] for item in self.cart)
             
-            # If user has credit, ask if they want to use it
+            # Check if user has enough credit
+            user_credit = float(self.user.get("credit", 0))
             if user_credit > 0:
-                use_credit_msg = QMessageBox()
-                use_credit_msg.setWindowTitle("Χρήση Πιστωτικού")
-                use_credit_msg.setText(f"Έχετε {user_credit:.2f}€ πιστωτικό, θα θέλατε να πραγματοποιήσετε την αγορά με το υπόλοιπό σας;")
-                use_credit_msg.setStyleSheet("""
-                    QMessageBox {
-                        background-color: #f0f0f0;
-                        color: #333333;
-                    }
-                    QPushButton {
-                        padding: 6px 20px;
-                        border-radius: 3px;
-                        min-width: 80px;
-                    }
-                    QPushButton[text="Ναι"] {
-                        background-color: #D91656;
-                        color: white;
-                    }
-                    QPushButton[text="Ναι"]:hover {
-                        background-color: #B31145;
-                    }
-                    QPushButton[text="Όχι"] {
-                        background-color: #6b5b95;
-                        color: white;
-                    }
-                    QPushButton[text="Όχι"]:hover {
-                        background-color: #524778;
-                    }
-                """)
+                # Ask if user wants to use credit
+                use_credit = QMessageBox.question(
+                    self,
+                    "Use Credit",
+                    f"You have {user_credit:.2f}€ in credit. Would you like to use it for this purchase?",
+                    QMessageBox.Yes | QMessageBox.No,
+                    QMessageBox.Yes
+                )
                 
-                yes_button = QPushButton("Ναι")
-                no_button = QPushButton("Όχι")
-                use_credit_msg.addButton(yes_button, QMessageBox.YesRole)
-                use_credit_msg.addButton(no_button, QMessageBox.NoRole)
-                
-                reply = use_credit_msg.exec_()
-                
-                if reply == 0:  # Yes was clicked
-                    if user_credit >= total_cost:
-                        # Full payment with credit
-                        remaining_credit = user_credit - total_cost
-                        self.update_user_credit(remaining_credit)
-                    else:
-                        # Partial payment with credit
-                        info_msg = QMessageBox()
-                        info_msg.setIcon(QMessageBox.Information)
-                        info_msg.setWindowTitle("Μερική Χρήση Πιστωτικού")
-                        info_msg.setText("Θα χρησιμοποιηθεί όλο το πιστωτικό σας και η διαφορά θα καλυφθεί από εσάς.")
-                        info_msg.setStyleSheet("""
-                            QMessageBox {
-                                background-color: #f0f0f0;
-                                color: #333333;
-                            }
-                            QPushButton {
-                                background-color: #D91656;
-                                color: white;
-                                padding: 6px 20px;
-                                border-radius: 3px;
-                                min-width: 80px;
-                            }
-                            QPushButton:hover {
-                                background-color: #B31145;
-                            }
-                        """)
-                        info_msg.exec_()
-                        
-                        self.update_user_credit(0)  # Set credit to 0
+                if use_credit == QMessageBox.Yes:
+                    # Calculate how much credit to use
+                    credit_to_use = min(user_credit, total_price)
+                    total_price -= credit_to_use
+                    
+                    # Update user's credit
+                    new_credit = user_credit - credit_to_use
+                    self.update_user_credit(new_credit)
             
             # Save tickets to tickets.json
             if self.save_tickets_to_file():
@@ -412,54 +344,18 @@ class TicketPurchaseModal(QWidget):
                 """)
                 success_msg.exec_()
                 
-                # Get updated event data
-                try:
-                    with open("events.json", "r", encoding="utf-8") as f:
-                        events = json.load(f)
-                        for e in events:
-                            if e["event_id"] == self.event["event_id"]:
-                                updated_event = e
-                                break
-                except Exception as e:
-                    print(f"Error loading updated event data: {str(e)}")
-                    updated_event = self.event
-                
-                # Notify parent app to reload events data and update views
-                if self.parent_app:
-                    if hasattr(self.parent_app, 'reload_events_data'):
-                        self.parent_app.reload_events_data()
-                    if hasattr(self.parent_app, 'update_credit_display'):
-                        self.parent_app.update_credit_display()
-                    # Force refresh of event details with updated data
-                    if hasattr(self.parent_app, 'show_attendee_event_details_in_stack'):
-                        self.parent_app.show_attendee_event_details_in_stack(updated_event)
+                # Refresh parent app's event data and UI
+                if hasattr(self.parent_app, 'refresh_event_data'):
+                    self.parent_app.refresh_event_data()
                 
                 self.close()
-            else:
-                raise Exception("Failed to save tickets")
                 
         except Exception as e:
-            error_msg = QMessageBox()
-            error_msg.setIcon(QMessageBox.Critical)
-            error_msg.setWindowTitle("Σφάλμα")
-            error_msg.setText(f"Σφάλμα κατά την αγορά: {str(e)}")
-            error_msg.setStyleSheet("""
-                QMessageBox {
-                    background-color: #f0f0f0;
-                    color: #333333;
-                }
-                QPushButton {
-                    background-color: #D91656;
-                    color: white;
-                    padding: 6px 20px;
-                    border-radius: 3px;
-                    min-width: 80px;
-                }
-                QPushButton:hover {
-                    background-color: #B31145;
-                }
-            """)
-            error_msg.exec_()
+            QMessageBox.critical(
+                self,
+                "Error",
+                f"An error occurred during purchase: {str(e)}"
+            )
 
     def update_user_credit(self, new_credit):
         """Update user's credit in users.json"""

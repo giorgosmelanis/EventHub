@@ -33,6 +33,74 @@
                     "quantity": 1
                 }
             ]
+        },
+        {
+            "request_id": "2",
+            "timestamp": "29/05/2025 23:13:32",
+            "status": "accepted",
+            "sender": {
+                "user_id": 2,
+                "name": "Jack",
+                "surname": "Taylor"
+            },
+            "recipient": {
+                "user_id": 5,
+                "email": "att2"
+            },
+            "event": {
+                "event_id": 4,
+                "title": "Test_2 για Org2"
+            },
+            "tickets": [
+                {
+                    "ticket": {
+                        "ticket_id": 3,
+                        "event_id": 4,
+                        "user_id": 2,
+                        "ticket_type": "Early Bird",
+                        "quantity_bought": 88,
+                        "price": 26.0,
+                        "purchase_date": "29/05/2025 22:59:04",
+                        "status": "valid",
+                        "qr_code": "TKT-3-4-2"
+                    },
+                    "quantity": 10
+                }
+            ]
+        },
+        {
+            "request_id": "3",
+            "timestamp": "29/05/2025 23:38:03",
+            "status": "accepted",
+            "sender": {
+                "user_id": 2,
+                "name": "Jack",
+                "surname": "Taylor"
+            },
+            "recipient": {
+                "user_id": 5,
+                "email": "att2"
+            },
+            "event": {
+                "event_id": 4,
+                "title": "Test_2 για Org2"
+            },
+            "tickets": [
+                {
+                    "ticket": {
+                        "ticket_id": 3,
+                        "event_id": 4,
+                        "user_id": 2,
+                        "ticket_type": "Early Bird",
+                        "quantity_bought": 60,
+                        "price": 26.0,
+                        "purchase_date": "29/05/2025 22:59:04",
+                        "status": "valid",
+                        "qr_code": "TKT-3-4-2"
+                    },
+                    "quantity": 10
+                }
+            ]
         }
     ]
 }

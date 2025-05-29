@@ -237,6 +237,24 @@
                 "reviewer_name": "John Doe",
                 "review_type": "vendor"
             }
+        },
+        {
+            "notification_id": "notif_20250529231856",
+            "user_id": 2,
+            "title": "Απάντηση σε Αίτημα Μεταφοράς Εισιτηρίων",
+            "message": "Ο χρήστης att2 αποδέχτηκε το αίτημα μεταφοράς εισιτηρίων.",
+            "timestamp": "29/05/2025 23:18:56",
+            "read": false,
+            "category": "Ticket Transfers"
+        },
+        {
+            "notification_id": "notif_20250529233816",
+            "user_id": 2,
+            "title": "Απάντηση σε Αίτημα Μεταφοράς Εισιτηρίων",
+            "message": "Ο χρήστης att2 αποδέχτηκε το αίτημα μεταφοράς εισιτηρίων.",
+            "timestamp": "29/05/2025 23:38:16",
+            "read": false,
+            "category": "Ticket Transfers"
         }
     ]
 }
