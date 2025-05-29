@@ -50,10 +50,29 @@
             "media_path": "event_images/lights-1.jpg",
             "vendor_id": 6,
             "vendor_name": "Menios Alanis",
-            "event_id": 2,
+            "event_id": null,
+            "event_title": null,
+            "status": "available",
+            "assigned_date": null
+        },
+        {
+            "service_id": 4,
+            "name": "Vend1 - Villa",
+            "type": "Ενοικίαση Χώρου",
+            "description": "Villa for parties!",
+            "start_date": "01/06/2025",
+            "end_date": "10/06/2026",
+            "pricing_type": "Ανά Ημέρα",
+            "price": "700",
+            "min_capacity": "0",
+            "max_capacity": "450",
+            "media_path": "service_media/test_event.jpeg",
+            "vendor_id": 3,
+            "vendor_name": "Jane Plane",
+            "event_id": 3,
             "event_title": null,
             "status": "assigned",
-            "assigned_date": "27/05/2025 22:10:37"
+            "assigned_date": "29/05/2025 16:15:39"
         }
     ]
 }

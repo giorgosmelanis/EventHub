@@ -9,6 +9,36 @@
             "status": "accepted",
             "timestamp": "27/05/2025 22:10:22",
             "response_date": "27/05/2025 22:10:37"
+        },
+        {
+            "request_id": "req_20250529152218",
+            "event_id": 2,
+            "organizer_id": 1,
+            "vendor_id": 6,
+            "service_id": 3,
+            "status": "accepted",
+            "timestamp": "29/05/2025 15:22:18",
+            "response_date": "29/05/2025 15:31:23"
+        },
+        {
+            "request_id": "req_20250529154836",
+            "event_id": 2,
+            "organizer_id": 1,
+            "vendor_id": 6,
+            "service_id": 3,
+            "status": "rejected",
+            "timestamp": "29/05/2025 15:48:36",
+            "response_date": "29/05/2025 15:56:26"
+        },
+        {
+            "request_id": "req_20250529161524",
+            "event_id": 3,
+            "organizer_id": 4,
+            "vendor_id": 3,
+            "service_id": 4,
+            "status": "accepted",
+            "timestamp": "29/05/2025 16:15:24",
+            "response_date": "29/05/2025 16:15:39"
         }
     ]
 }

@@ -17,7 +17,8 @@ class AddServicesModal(QWidget):
         super().__init__()
         self.parent = parent
         self.current_user = parent.current_user
-        self.services = load_services()  # Load existing services
+        services_data = load_services()  # Load existing services
+        self.services = services_data["services"]  # Get the services list
         self.setWindowTitle("Προσθήκη Νέας Υπηρεσίας")
         self.setGeometry(200, 200, 600, 800)
         self.setStyleSheet("""
@@ -470,8 +471,9 @@ class AddServicesModal(QWidget):
             "status": "available"  # available, assigned, completed
         }
 
-        # Save the service
+        # Add the new service to the list
         self.services.append(new_service)
+        # Save the services list
         save_services(self.services)
 
         QMessageBox.information(self, "Επιτυχία", "Η υπηρεσία δημιουργήθηκε με επιτυχία!")

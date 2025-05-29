@@ -85,6 +85,158 @@
             "timestamp": "28/05/2025 18:44:38",
             "read": false,
             "category": "Ticket Transfers"
+        },
+        {
+            "notification_id": "notif_20250529154838",
+            "user_id": 6,
+            "title": "Νέο Αίτημα Συνεργασίας",
+            "message": "Έχετε ένα νέο αίτημα συνεργασίας για την υπηρεσία 'Φωτισμός του Μένιου' από τον διοργανωτή John Doe.",
+            "timestamp": "29/05/2025 15:48:38",
+            "read": true,
+            "category": "Collaboration Requests",
+            "collaboration_request": {
+                "request_id": "req_20250529154836",
+                "organizer_info": {
+                    "id": 1,
+                    "name": "John",
+                    "surname": "Doe",
+                    "email": "org1"
+                },
+                "event_info": {
+                    "id": 2,
+                    "title": "Tesτ_2 για Org1",
+                    "description": "Test για Event που ΔΕΝ εχει γίνει",
+                    "start_date": "30/05/2025",
+                    "end_date": "30/05/2025",
+                    "location": "Αθήνα",
+                    "type": "Ιδιωτικό"
+                },
+                "service_info": {
+                    "id": 3,
+                    "name": "Φωτισμός του Μένιου",
+                    "description": "Επαγγελματικός φωτισμός με σύγχρονο εξοπλισμό.",
+                    "price": "30",
+                    "type": "Φωτισμός"
+                }
+            },
+            "deleted": true
+        },
+        {
+            "notification_id": "notif_20250529155626",
+            "user_id": 1,
+            "title": "Αίτημα Συνεργασίας Απορρίφθηκε ❌",
+            "message": "Ο vendor Menios Alanis απέρριψε το αίτημα συνεργασίας για την υπηρεσία 'Φωτισμός του Μένιου' στην εκδήλωση 'Tesτ_2 για Org1'.",
+            "timestamp": "29/05/2025 15:56:26",
+            "read": true,
+            "category": "Collaboration Requests",
+            "collaboration_response": {
+                "status": "rejected",
+                "vendor_name": "Menios Alanis",
+                "service_name": "Φωτισμός του Μένιου",
+                "event_title": "Tesτ_2 για Org1",
+                "response_date": "29/05/2025 15:56:26"
+            }
+        },
+        {
+            "notification_id": "notif_20250529160540",
+            "user_id": 1,
+            "title": "Νέα Αξιολόγηση Εκδήλωσης",
+            "message": "Η εκδήλωση 'Test_1 για Org1' έλαβε νέα αξιολόγηση από έναν συμμετέχοντα.",
+            "timestamp": "29/05/2025 16:05:40",
+            "read": true,
+            "category": "Event Reviews",
+            "review_data": {
+                "rating": 3.5,
+                "comments": "klklKLkl",
+                "suggestions": "sdsdsaasdasd",
+                "reviewer_name": "Jack Taylor",
+                "review_type": "event",
+                "event_title": "Test_1 για Org1"
+            }
+        },
+        {
+            "notification_id": "notif_20250529161526",
+            "user_id": 3,
+            "title": "Νέο Αίτημα Συνεργασίας",
+            "message": "Έχετε ένα νέο αίτημα συνεργασίας για την υπηρεσία 'Vend1 - Villa' από τον διοργανωτή Org2 Org2.",
+            "timestamp": "29/05/2025 16:15:26",
+            "read": true,
+            "category": "Collaboration Requests",
+            "collaboration_request": {
+                "request_id": "req_20250529161524",
+                "organizer_info": {
+                    "id": 4,
+                    "name": "Org2",
+                    "surname": "Org2",
+                    "email": "org2"
+                },
+                "event_info": {
+                    "id": 3,
+                    "title": "Test για Org2",
+                    "description": "",
+                    "start_date": "08/05/2025",
+                    "end_date": "08/05/2025",
+                    "location": "Αθήνα",
+                    "type": "Ιδιωτικό"
+                },
+                "service_info": {
+                    "id": 4,
+                    "name": "Vend1 - Villa",
+                    "description": "Villa for parties!",
+                    "price": "700",
+                    "type": "Ενοικίαση Χώρου"
+                }
+            },
+            "deleted": true
+        },
+        {
+            "notification_id": "notif_20250529161539",
+            "user_id": 4,
+            "title": "Αίτημα Συνεργασίας Εγκρίθηκε! ✅",
+            "message": "Ο vendor Jane Plane αποδέχτηκε το αίτημα συνεργασίας για την υπηρεσία 'Vend1 - Villa' στην εκδήλωση 'Test για Org2'.",
+            "timestamp": "29/05/2025 16:15:39",
+            "read": true,
+            "category": "Collaboration Requests",
+            "collaboration_response": {
+                "status": "accepted",
+                "vendor_name": "Jane Plane",
+                "service_name": "Vend1 - Villa",
+                "event_title": "Test για Org2",
+                "response_date": "29/05/2025 16:15:39"
+            }
+        },
+        {
+            "notification_id": "notif_20250529202721",
+            "user_id": 1,
+            "title": "Νέα Αξιολόγηση Εκδήλωσης",
+            "message": "Η εκδήλωση 'Test_1 για Org1' έλαβε νέα αξιολόγηση από έναν συμμετέχοντα.",
+            "timestamp": "29/05/2025 20:27:21",
+            "read": true,
+            "category": "Event Reviews",
+            "review_data": {
+                "rating": 4.5,
+                "comments": "wwweerrr12",
+                "suggestions": "weqeqweqwe111232323",
+                "reviewer_name": "Jack Taylor",
+                "review_type": "event",
+                "event_title": "Test_1 για Org1"
+            }
+        },
+        {
+            "notification_id": "notif_20250529202826",
+            "user_id": 3,
+            "title": "Νέα Αξιολόγηση",
+            "message": "Λάβατε νέα αξιολόγηση από τον διοργανωτή John Doe.",
+            "timestamp": "29/05/2025 20:28:26",
+            "read": true,
+            "category": "Service Reviews",
+            "review_data": {
+                "rating": 3.5,
+                "comments": "23425675rersdfds",
+                "suggestions": "we234t56u5",
+                "reviewer_name": "John Doe",
+                "review_type": "vendor"
+            }
         }
     ]
 }

@@ -30,6 +30,68 @@
                 "organizer_id": 1,
                 "date": "08/05/2025"
             }
+        },
+        {
+            "id": 2,
+            "review_type": "event",
+            "rating": 3.5,
+            "comments": "klklKLkl",
+            "suggestions": "sdsdsaasdasd",
+            "created_at": "29/05/2025 16:05",
+            "updated_at": "29/05/2025 16:05",
+            "status": "active",
+            "user": {
+                "id": 2,
+                "name": "Jack",
+                "surname": "Taylor"
+            },
+            "notification_status": {
+                "organizer_notified": false,
+                "vendor_notified": false,
+                "notification_sent_at": null
+            },
+            "metadata": {
+                "client_version": "1.0",
+                "platform": "desktop",
+                "language": "el"
+            },
+            "event_id": 1,
+            "event_data": {
+                "title": "Test_1 για Org1",
+                "organizer_id": 1,
+                "date": "08/05/2025"
+            }
+        },
+        {
+            "id": 3,
+            "review_type": "event",
+            "rating": 4.5,
+            "comments": "wwweerrr12",
+            "suggestions": "weqeqweqwe111232323",
+            "created_at": "29/05/2025 20:27",
+            "updated_at": "29/05/2025 20:27",
+            "status": "active",
+            "user": {
+                "id": 2,
+                "name": "Jack",
+                "surname": "Taylor"
+            },
+            "notification_status": {
+                "organizer_notified": false,
+                "vendor_notified": false,
+                "notification_sent_at": null
+            },
+            "metadata": {
+                "client_version": "1.0",
+                "platform": "desktop",
+                "language": "el"
+            },
+            "event_id": 1,
+            "event_data": {
+                "title": "Test_1 για Org1",
+                "organizer_id": 1,
+                "date": "08/05/2025"
+            }
         }
     ],
     "vendor_reviews": [
@@ -63,9 +125,40 @@
                 "service_type": "",
                 "service_date": "27/05/2025"
             }
+        },
+        {
+            "id": 2,
+            "review_type": "vendor",
+            "rating": 3.5,
+            "comments": "23425675rersdfds",
+            "suggestions": "we234t56u5",
+            "created_at": "29/05/2025 20:28",
+            "updated_at": "29/05/2025 20:28",
+            "status": "active",
+            "user": {
+                "id": 1,
+                "name": "John",
+                "surname": "Doe"
+            },
+            "notification_status": {
+                "organizer_notified": false,
+                "vendor_notified": false,
+                "notification_sent_at": null
+            },
+            "metadata": {
+                "client_version": "1.0",
+                "platform": "desktop",
+                "language": "el"
+            },
+            "vendor_id": 3,
+            "event_id": 1,
+            "service_details": {
+                "service_type": "",
+                "service_date": "29/05/2025"
+            }
         }
     ],
     "metadata": {
-        "last_updated": "27/05/2025 21:23"
+        "last_updated": "29/05/2025 20:28"
     }
 }

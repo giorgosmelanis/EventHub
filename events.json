@@ -73,12 +73,34 @@
     {
         "event_id": 4,
         "title": "Test_2 για Org2",
-        "start_date": "30/05/2025",
-        "end_date": "30/05/2025",
+        "start_date": "01/06/2025",
+        "end_date": "01/06/2025",
         "start_time": "17:30",
         "location": "Αθήνα",
         "type": "Ιδιωτικό",
         "description": "Τεστ για Event που δεν έχει γίνει",
+        "image": "event_images/test_event.jpeg",
+        "organizer_id": 4,
+        "organizer": "Org2 Org2",
+        "ticket_types": [
+            {
+                "type": "Early Bird",
+                "price": 26.0,
+                "total_quantity": 89
+            }
+        ],
+        "ticket_availability": "01/06/2025 17:29",
+        "ticket_cancel_availability": "01/06/2025 17:29"
+    },
+    {
+        "event_id": 5,
+        "title": "Test_3 για Org2",
+        "start_date": "01/06/2025",
+        "end_date": "01/06/2025",
+        "start_time": "17:30",
+        "location": "Αθήνα",
+        "type": "Ιδιωτικό",
+        "description": "Τεστ για Event που θα γίνει",
         "image": "event_images/test_event.jpeg",
         "organizer_id": 4,
         "organizer": "Org2 Org2",
