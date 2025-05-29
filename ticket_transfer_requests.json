@@ -279,6 +279,40 @@
                     "quantity": 3
                 }
             ]
+        },
+        {
+            "request_id": "8",
+            "timestamp": "30/05/2025 02:10:55",
+            "status": "accepted",
+            "sender": {
+                "user_id": 2,
+                "name": "Jack",
+                "surname": "Taylor"
+            },
+            "recipient": {
+                "user_id": 5,
+                "email": "att2"
+            },
+            "event": {
+                "event_id": 4,
+                "title": "Test_2 για Org2"
+            },
+            "tickets": [
+                {
+                    "ticket": {
+                        "ticket_id": 3,
+                        "event_id": 4,
+                        "user_id": 2,
+                        "ticket_type": "Early Bird",
+                        "quantity_bought": 24,
+                        "price": 26.0,
+                        "purchase_date": "29/05/2025 22:59:04",
+                        "status": "valid",
+                        "qr_code": "TKT-3-4-2"
+                    },
+                    "quantity": 4
+                }
+            ]
         }
     ]
 }

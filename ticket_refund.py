@@ -31,7 +31,7 @@ class TicketRefundDialog(QDialog):
         layout.setContentsMargins(20, 20, 20, 20)
 
         # Title
-        title = QLabel("Transfer Ticket")
+        title = QLabel("Cancel Ticket")
         title.setFont(QFont("Helvetica", 18, QFont.Bold))
         title.setStyleSheet("color: #D91656; padding: 10px;")
         title.setAlignment(Qt.AlignCenter)

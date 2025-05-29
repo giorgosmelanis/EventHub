@@ -324,7 +324,7 @@
             "title": "Απάντηση σε Αίτημα Μεταφοράς Εισιτηρίων",
             "message": "Ο χρήστης att2 αποδέχτηκε το αίτημα μεταφοράς εισιτηρίων.",
             "timestamp": "30/05/2025 01:42:40",
-            "read": false,
+            "read": true,
             "category": "Ticket Transfers"
         },
         {
@@ -341,6 +341,66 @@
                 "service_name": "Professional DJ Services",
                 "event_title": "My Party",
                 "response_date": "30/05/2025 01:42:58"
+            }
+        },
+        {
+            "notification_id": "notif_20250530021119",
+            "user_id": 2,
+            "title": "Απάντηση σε Αίτημα Μεταφοράς Εισιτηρίων",
+            "message": "Ο χρήστης att2 αποδέχτηκε το αίτημα μεταφοράς εισιτηρίων.",
+            "timestamp": "30/05/2025 02:11:19",
+            "read": false,
+            "category": "Ticket Transfers"
+        },
+        {
+            "notification_id": "notif_20250530021625",
+            "user_id": 6,
+            "title": "Νέο Αίτημα Συνεργασίας",
+            "message": "Έχετε ένα νέο αίτημα συνεργασίας για την υπηρεσία 'Φωτισμός του Μένιου' από τον διοργανωτή John Doe.",
+            "timestamp": "30/05/2025 02:16:25",
+            "read": true,
+            "category": "Collaboration Requests",
+            "collaboration_request": {
+                "request_id": "req_20250530021548",
+                "organizer_info": {
+                    "id": 1,
+                    "name": "John",
+                    "surname": "Doe",
+                    "email": "org1"
+                },
+                "event_info": {
+                    "id": 6,
+                    "title": "Nέα Εκδήλωση",
+                    "description": "νεα εκδηλωση",
+                    "start_date": "01/08/2025",
+                    "end_date": "03/08/2025",
+                    "location": "Πάτρα",
+                    "type": "Multi-day Festival"
+                },
+                "service_info": {
+                    "id": 3,
+                    "name": "Φωτισμός του Μένιου",
+                    "description": "Επαγγελματικός φωτισμός με σύγχρονο εξοπλισμό.",
+                    "price": "30",
+                    "type": "Φωτισμός"
+                }
+            },
+            "deleted": true
+        },
+        {
+            "notification_id": "notif_20250530021759",
+            "user_id": 1,
+            "title": "Αίτημα Συνεργασίας Εγκρίθηκε! ✅",
+            "message": "Ο vendor Menios Alanis αποδέχτηκε το αίτημα συνεργασίας για την υπηρεσία 'Φωτισμός του Μένιου' στην εκδήλωση 'Nέα Εκδήλωση'.",
+            "timestamp": "30/05/2025 02:17:59",
+            "read": true,
+            "category": "Collaboration Requests",
+            "collaboration_response": {
+                "status": "accepted",
+                "vendor_name": "Menios Alanis",
+                "service_name": "Φωτισμός του Μένιου",
+                "event_title": "Nέα Εκδήλωση",
+                "response_date": "30/05/2025 02:17:59"
             }
         }
     ]

@@ -51,10 +51,10 @@
             "media_path": "event_images/lights-1.jpg",
             "vendor_id": 6,
             "vendor_name": "Menios Alanis",
-            "event_id": null,
+            "event_id": 6,
             "event_title": null,
-            "status": "available",
-            "assigned_date": null
+            "status": "assigned",
+            "assigned_date": "30/05/2025 02:17:59"
         },
         {
             "service_id": 4,
