@@ -90,15 +90,17 @@ def update_request_status(request_id, new_status):
         return False
 
 class CollaborationRequestDetailsDialog(QDialog):
-    def __init__(self, request_data, event_data, service_data, parent=None):
+    def __init__(self, request_data, event_data, service_data, parent=None, notification=None):
         super().__init__(parent)
         self.request_data = request_data
         self.event_data = event_data
         self.service_data = service_data
+        self.parent_app = parent
+        self.original_notification = notification
         self.setup_ui()
 
     def setup_ui(self):
-        self.setWindowTitle("Αίτημα Συνεργασίας")
+        self.setWindowTitle("Λεπτομέρειες Εκδήλωσης")
         self.setMinimumWidth(600)
         self.setStyleSheet("background-color: white;")
 
@@ -106,10 +108,25 @@ class CollaborationRequestDetailsDialog(QDialog):
         layout.setSpacing(20)
 
         # Title
-        title = QLabel("Λεπτομέρειες Αιτήματος Συνεργασίας")
+        title = QLabel("Νέο Αίτημα Συνεργασίας")
         title.setFont(QFont("Helvetica", 18, QFont.Bold))
-        title.setStyleSheet("color: #333;")
+        title.setStyleSheet("color: #D91656; text-align: center;")
+        title.setAlignment(Qt.AlignCenter)
         layout.addWidget(title)
+
+        # Message - get organizer name from notification if available
+        organizer_name = "διοργανωτή"
+        if self.original_notification:
+            organizer_info = self.original_notification.get("collaboration_request", {}).get("organizer_info", {})
+            if organizer_info:
+                organizer_name = f"τον διοργανωτή {organizer_info.get('name', '')} {organizer_info.get('surname', '')}"
+        
+        message = QLabel(f"Έχετε ένα νέο αίτημα συνεργασίας για την υπηρεσία '{self.service_data.get('name', '')}' από {organizer_name}.")
+        message.setFont(QFont("Arial", 12))
+        message.setStyleSheet("color: #333; padding: 10px; text-align: center;")
+        message.setAlignment(Qt.AlignCenter)
+        message.setWordWrap(True)
+        layout.addWidget(message)
 
         # Event Details
         event_group = QWidget()
@@ -153,20 +170,21 @@ class CollaborationRequestDetailsDialog(QDialog):
         # Buttons
         button_container = QWidget()
         button_layout = QHBoxLayout(button_container)
-        button_layout.setSpacing(10)
+        button_layout.setSpacing(20)
 
         reject_btn = QPushButton("Απόρριψη")
         reject_btn.setStyleSheet("""
             QPushButton {
-                background-color: #6b5b95;
+                background-color: #6c757d;
                 color: white;
-                padding: 10px 20px;
-                border-radius: 4px;
+                padding: 12px 24px;
+                border-radius: 6px;
                 font-size: 14px;
+                font-weight: bold;
                 min-width: 120px;
             }
             QPushButton:hover {
-                background-color: #524778;
+                background-color: #5a6268;
             }
         """)
         reject_btn.clicked.connect(lambda: self.handle_response("rejected"))
@@ -176,9 +194,10 @@ class CollaborationRequestDetailsDialog(QDialog):
             QPushButton {
                 background-color: #D91656;
                 color: white;
-                padding: 10px 20px;
-                border-radius: 4px;
+                padding: 12px 24px;
+                border-radius: 6px;
                 font-size: 14px;
+                font-weight: bold;
                 min-width: 120px;
             }
             QPushButton:hover {
@@ -188,21 +207,29 @@ class CollaborationRequestDetailsDialog(QDialog):
         accept_btn.clicked.connect(lambda: self.handle_response("accepted"))
 
         button_layout.addWidget(reject_btn)
+        button_layout.addStretch()
         button_layout.addWidget(accept_btn)
-        layout.addWidget(button_container, alignment=Qt.AlignCenter)
+        layout.addWidget(button_container)
 
     def handle_response(self, response):
-        if update_request_status(self.request_data["request_id"], response):
-            status_text = "αποδοχή" if response == "accepted" else "απόρριψη"
-            QMessageBox.information(
-                self,
-                "Επιτυχία",
-                f"Η {status_text} του αιτήματος ολοκληρώθηκε με επιτυχία."
-            )
+        """Handle the vendor's response to the collaboration request."""
+        if self.parent_app and self.original_notification:
+            # Use the original notification to maintain all the proper data structure
+            self.parent_app.handle_collaboration_response(self.original_notification, response)
             self.accept()
         else:
-            QMessageBox.warning(
-                self,
-                "Σφάλμα",
-                "Παρουσιάστηκε σφάλμα κατά την επεξεργασία του αιτήματος."
-            ) 
+            # Fallback to old method if no parent or notification
+            if update_request_status(self.request_data["request_id"], response):
+                status_text = "αποδοχή" if response == "accepted" else "απόρριψη"
+                QMessageBox.information(
+                    self,
+                    "Επιτυχία",
+                    f"Η {status_text} του αιτήματος ολοκληρώθηκε με επιτυχία."
+                )
+                self.accept()
+            else:
+                QMessageBox.warning(
+                    self,
+                    "Σφάλμα",
+                    "Παρουσιάστηκε σφάλμα κατά την επεξεργασία του αιτήματος."
+                ) 

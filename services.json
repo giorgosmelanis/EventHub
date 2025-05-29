@@ -32,9 +32,10 @@
             "media_path": "event_images/dj-image-1.jpg",
             "vendor_id": 6,
             "vendor_name": "Menios Alanis",
-            "event_id": null,
+            "event_id": 7,
             "event_title": null,
-            "status": "available"
+            "status": "assigned",
+            "assigned_date": "30/05/2025 01:42:58"
         },
         {
             "service_id": 3,

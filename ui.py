@@ -639,8 +639,8 @@ class EventManagementApp(QMainWindow, TicketManagementMixin):
             }
         """)
         
-        if event.get('image_path'):
-            pixmap = QPixmap(event['image_path'])
+        if event.get('image'):
+            pixmap = QPixmap(event['image'])
             if not pixmap.isNull():
                 pixmap = pixmap.scaled(180, 180, Qt.KeepAspectRatio, Qt.SmoothTransformation)
                 image_label.setPixmap(pixmap)
@@ -667,7 +667,7 @@ class EventManagementApp(QMainWindow, TicketManagementMixin):
         info_layout.addWidget(title)
         
         # Event Date and Time
-        date_str = f"{event['date']} {event['time']}"
+        date_str = f"{event['start_date']} {event['start_time']}"
         date_label = QLabel(f"Ημερομηνία: {date_str}")
         date_label.setStyleSheet("color: #666; font-size: 14px; border: none;")
         info_layout.addWidget(date_label)
@@ -4138,8 +4138,8 @@ class EventManagementApp(QMainWindow, TicketManagementMixin):
             if not service:
                 return
             
-            # Show the collaboration request details dialog
-            dialog = CollaborationRequestDetailsDialog(request, event, service, self)
+            # Show the collaboration request details dialog - pass the notification
+            dialog = CollaborationRequestDetailsDialog(request, event, service, self, notification)
             dialog.exec_()
             
         except Exception as e:
@@ -5732,91 +5732,27 @@ class NotificationsTab(QWidget):
         # Add action buttons based on notification type
         action_buttons_added = False
 
-        if notification.get("type") == "ticket_transfer":
-            # Check if this is a pending transfer request
+        if notification.get("category") == "Collaboration Requests" and self.parent.current_user.get("type") == "vendor":
+            # Check if this is a pending collaboration request
             try:
-                with open("ticket_transfer_requests.json", "r", encoding="utf-8") as f:
-                    transfer_data = json.load(f)
-                    request = next((req for req in transfer_data["transfer_requests"] 
-                                  if req["request_id"] == notification.get("transfer_request_id") 
-                                  and req["status"] == "pending"), None)
-                    if request:
-                        # Add action buttons
-                        buttons_widget = QWidget()
-                        buttons_widget.setStyleSheet("background-color: #f8f9fa; padding: 15px; border-radius: 10px;")
-                        buttons_layout = QHBoxLayout(buttons_widget)
-                        buttons_layout.setSpacing(15)
-
-                        # Back button (grey)
-                        back_btn = QPushButton("Πίσω")
-                        back_btn.setStyleSheet("""
-                            QPushButton {
-                                background-color: #6c757d;
-                                color: white;
-                                padding: 12px 25px;
-                                border-radius: 8px;
-                                font-size: 14px;
-                            font-weight: bold;
-                                min-width: 100px;
-                            }
-                            QPushButton:hover {
-                                background-color: #5a6268;
-                        }
-                    """)
-                        back_btn.clicked.connect(dialog.close)
-
-                        # Reject button (red)
-                        reject_btn = QPushButton("Απόρριψη")
-                        reject_btn.setStyleSheet("""
-                            QPushButton {
-                                background-color: #dc3545;
-                                color: white;
-                                padding: 12px 25px;
-                                border-radius: 8px;
-                                font-size: 14px;
-                            font-weight: bold;
-                                min-width: 100px;
-                            }
-                            QPushButton:hover {
-                                background-color: #c82333;
-                        }
-                    """)
-                        reject_btn.clicked.connect(lambda: [
-                            self.parent.handle_transfer_response(notification, False),
-                            dialog.close(),
-                            self.load_notifications()
-                        ])
-
-                        # Accept button (green)
-                        accept_btn = QPushButton("Αποδοχή")
-                        accept_btn.setStyleSheet("""
-                            QPushButton {
-                                background-color: #28a745;
-                                color: white;
-                                padding: 12px 25px;
-                                border-radius: 8px;
-                                font-size: 14px;
-                    font-weight: bold;
-                                min-width: 100px;
-                            }
-                            QPushButton:hover {
-                                background-color: #218838;
-                }
-            """)
-                        accept_btn.clicked.connect(lambda: [
-                            self.parent.handle_transfer_response(notification, True),
-                            dialog.close(),
-                            self.load_notifications()
-                        ])
-
-                        buttons_layout.addWidget(back_btn)
-                        buttons_layout.addStretch()
-                        buttons_layout.addWidget(reject_btn)
-                        buttons_layout.addWidget(accept_btn)
-                        layout.addWidget(buttons_widget)
-                        action_buttons_added = True
+                collab_data = notification.get("collaboration_request", {})
+                request_id = collab_data.get("request_id")
+                
+                if request_id:
+                    with open("collaboration_requests.json", "r") as f:
+                        data = json.load(f)
+                        request = next((r for r in data["requests"] if r["request_id"] == request_id and r["status"] == "pending"), None)
+                        
+                        if request:
+                            # Add collaboration action buttons
+                            self.add_collaboration_actions(layout, notification, dialog)
+                            action_buttons_added = True
             except Exception as e:
-                print(f"Error adding transfer action buttons: {e}")
+                print(f"Error adding collaboration action buttons: {e}")
+
+        elif notification.get("type") == "ticket_transfer":
+            # Add action buttons for ticket transfer
+            action_buttons_added = self.add_ticket_actions(layout, notification, dialog)
 
         # Add back button only if no action buttons were added
         if not action_buttons_added:
@@ -5842,6 +5778,7 @@ class NotificationsTab(QWidget):
                 }
             """)
             back_btn.clicked.connect(dialog.close)
+
             button_layout.addWidget(back_btn, alignment=Qt.AlignCenter)
             layout.addWidget(button_container)
 
@@ -6000,7 +5937,96 @@ class NotificationsTab(QWidget):
 
     def add_ticket_actions(self, layout, notification, dialog):
         """Add action buttons for ticket-related notifications."""
-        if notification.get("can_modify", False):
+        # Check if this is a ticket transfer notification
+        if notification.get("type") == "ticket_transfer":
+            # Check if this is a pending transfer request
+            try:
+                with open("ticket_transfer_requests.json", "r", encoding="utf-8") as f:
+                    transfer_data = json.load(f)
+                    request = next((req for req in transfer_data["transfer_requests"] 
+                                  if req["request_id"] == notification.get("transfer_request_id") 
+                                  and req["status"] == "pending"), None)
+                    if request:
+                        # Add action buttons
+                        buttons_widget = QWidget()
+                        buttons_widget.setStyleSheet("background-color: #f8f9fa; padding: 15px; border-radius: 10px;")
+                        buttons_layout = QHBoxLayout(buttons_widget)
+                        buttons_layout.setSpacing(15)
+
+                        # Back button (grey)
+                        back_btn = QPushButton("Πίσω")
+                        back_btn.setStyleSheet("""
+                            QPushButton {
+                                background-color: #6c757d;
+                                color: white;
+                                padding: 12px 25px;
+                                border-radius: 8px;
+                                font-size: 14px;
+                                font-weight: bold;
+                                min-width: 100px;
+                            }
+                            QPushButton:hover {
+                                background-color: #5a6268;
+                            }
+                        """)
+                        back_btn.clicked.connect(dialog.close)
+
+                        # Reject button (red)
+                        reject_btn = QPushButton("Απόρριψη")
+                        reject_btn.setStyleSheet("""
+                            QPushButton {
+                                background-color: #dc3545;
+                                color: white;
+                                padding: 12px 25px;
+                                border-radius: 8px;
+                                font-size: 14px;
+                                font-weight: bold;
+                                min-width: 100px;
+                            }
+                            QPushButton:hover {
+                                background-color: #c82333;
+                            }
+                        """)
+                        reject_btn.clicked.connect(lambda: [
+                            self.parent.handle_transfer_response(notification, False),
+                            dialog.close(),
+                            self.load_notifications()
+                        ])
+
+                        # Accept button (green)
+                        accept_btn = QPushButton("Αποδοχή")
+                        accept_btn.setStyleSheet("""
+                            QPushButton {
+                                background-color: #28a745;
+                                color: white;
+                                padding: 12px 25px;
+                                border-radius: 8px;
+                                font-size: 14px;
+                                font-weight: bold;
+                                min-width: 100px;
+                            }
+                            QPushButton:hover {
+                                background-color: #218838;
+                            }
+                        """)
+                        accept_btn.clicked.connect(lambda: [
+                            self.parent.handle_transfer_response(notification, True),
+                            dialog.close(),
+                            self.load_notifications()
+                        ])
+
+                        buttons_layout.addWidget(back_btn)
+                        buttons_layout.addStretch()
+                        buttons_layout.addWidget(reject_btn)
+                        buttons_layout.addWidget(accept_btn)
+                        layout.addWidget(buttons_widget)
+                        return True  # Indicate that buttons were added
+                        
+            except Exception as e:
+                print(f"Error adding transfer action buttons: {e}")
+        
+        # Handle other ticket actions
+        elif notification.get("can_modify", False):
             modify_btn = QPushButton("Modify Booking")
             modify_btn.setStyleSheet("""
                 QPushButton {
@@ -6020,6 +6046,9 @@ class NotificationsTab(QWidget):
                 dialog.close()
             ])
             layout.addWidget(modify_btn, alignment=Qt.AlignCenter)
+            return True  # Indicate that buttons were added
+        
+        return False  # No buttons were added
 
     def filter_notifications(self):
         """Filter notifications based on selected category."""

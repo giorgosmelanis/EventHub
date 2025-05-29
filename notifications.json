@@ -83,7 +83,7 @@
             "title": "Απάντηση σε Αίτημα Μεταφοράς Εισιτηρίων",
             "message": "Ο χρήστης att2 αποδέχτηκε το αίτημα μεταφοράς εισιτηρίων.",
             "timestamp": "28/05/2025 18:44:38",
-            "read": false,
+            "read": true,
             "category": "Ticket Transfers"
         },
         {
@@ -244,7 +244,7 @@
             "title": "Απάντηση σε Αίτημα Μεταφοράς Εισιτηρίων",
             "message": "Ο χρήστης att2 αποδέχτηκε το αίτημα μεταφοράς εισιτηρίων.",
             "timestamp": "29/05/2025 23:18:56",
-            "read": false,
+            "read": true,
             "category": "Ticket Transfers"
         },
         {
@@ -253,8 +253,95 @@
             "title": "Απάντηση σε Αίτημα Μεταφοράς Εισιτηρίων",
             "message": "Ο χρήστης att2 αποδέχτηκε το αίτημα μεταφοράς εισιτηρίων.",
             "timestamp": "29/05/2025 23:38:16",
+            "read": true,
+            "category": "Ticket Transfers"
+        },
+        {
+            "notification_id": "notif_20250529234453",
+            "user_id": 2,
+            "title": "Απάντηση σε Αίτημα Μεταφοράς Εισιτηρίων",
+            "message": "Ο χρήστης att2 αποδέχτηκε το αίτημα μεταφοράς εισιτηρίων.",
+            "timestamp": "29/05/2025 23:44:53",
+            "read": true,
+            "category": "Ticket Transfers"
+        },
+        {
+            "notification_id": "notif_20250530011253",
+            "user_id": 2,
+            "title": "Απάντηση σε Αίτημα Μεταφοράς Εισιτηρίων",
+            "message": "Ο χρήστης att2 αποδέχτηκε το αίτημα μεταφοράς εισιτηρίων.",
+            "timestamp": "30/05/2025 01:12:53",
+            "read": true,
+            "category": "Ticket Transfers"
+        },
+        {
+            "notification_id": "notif_20250530013027",
+            "user_id": 2,
+            "title": "Απάντηση σε Αίτημα Μεταφοράς Εισιτηρίων",
+            "message": "Ο χρήστης att2 αποδέχτηκε το αίτημα μεταφοράς εισιτηρίων.",
+            "timestamp": "30/05/2025 01:30:27",
+            "read": true,
+            "category": "Ticket Transfers"
+        },
+        {
+            "notification_id": "notif_20250530013212",
+            "user_id": 6,
+            "title": "Νέο Αίτημα Συνεργασίας",
+            "message": "Έχετε ένα νέο αίτημα συνεργασίας για την υπηρεσία 'Professional DJ Services' από τον διοργανωτή John Doe.",
+            "timestamp": "30/05/2025 01:32:12",
+            "read": true,
+            "category": "Collaboration Requests",
+            "collaboration_request": {
+                "request_id": "req_20250530013210",
+                "organizer_info": {
+                    "id": 1,
+                    "name": "John",
+                    "surname": "Doe",
+                    "email": "org1"
+                },
+                "event_info": {
+                    "id": 7,
+                    "title": "My Party",
+                    "description": "perigrafh",
+                    "start_date": "03/07/2025",
+                    "end_date": "03/07/2025",
+                    "location": "Πάτρα",
+                    "type": "Διασκέδαση"
+                },
+                "service_info": {
+                    "id": 2,
+                    "name": "Professional DJ Services",
+                    "description": "Επαγγελματικές υπηρεσίες DJ με σύγχρονο εξοπλισμό και πλούσια μουσική συλλογή.",
+                    "price": "100",
+                    "type": "DJ"
+                }
+            },
+            "deleted": true
+        },
+        {
+            "notification_id": "notif_20250530014240",
+            "user_id": 2,
+            "title": "Απάντηση σε Αίτημα Μεταφοράς Εισιτηρίων",
+            "message": "Ο χρήστης att2 αποδέχτηκε το αίτημα μεταφοράς εισιτηρίων.",
+            "timestamp": "30/05/2025 01:42:40",
             "read": false,
             "category": "Ticket Transfers"
+        },
+        {
+            "notification_id": "notif_20250530014258",
+            "user_id": 1,
+            "title": "Αίτημα Συνεργασίας Εγκρίθηκε! ✅",
+            "message": "Ο vendor Menios Alanis αποδέχτηκε το αίτημα συνεργασίας για την υπηρεσία 'Professional DJ Services' στην εκδήλωση 'My Party'.",
+            "timestamp": "30/05/2025 01:42:58",
+            "read": true,
+            "category": "Collaboration Requests",
+            "collaboration_response": {
+                "status": "accepted",
+                "vendor_name": "Menios Alanis",
+                "service_name": "Professional DJ Services",
+                "event_title": "My Party",
+                "response_date": "30/05/2025 01:42:58"
+            }
         }
     ]
 }

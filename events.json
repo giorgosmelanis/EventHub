@@ -86,7 +86,7 @@
             {
                 "type": "Early Bird",
                 "price": 26.0,
-                "total_quantity": 24
+                "total_quantity": 47
             }
         ],
         "ticket_availability": "01/06/2025 17:29",
@@ -113,5 +113,74 @@
         ],
         "ticket_availability": "29/05/2025 17:29",
         "ticket_cancel_availability": "29/05/2025 17:29"
+    },
+    {
+        "event_id": 6,
+        "title": "Nέα Εκδήλωση",
+        "start_date": "01/08/2025",
+        "end_date": "03/08/2025",
+        "start_time": "13:00",
+        "location": "Πάτρα",
+        "type": "Multi-day Festival",
+        "description": "νεα εκδηλωση",
+        "image": "event_images/dj-image-1.jpg",
+        "organizer_id": 1,
+        "organizer": "John Doe",
+        "ticket_types": [
+            {
+                "type": "Early Bird",
+                "price": 13.0,
+                "total_quantity": 100
+            },
+            {
+                "type": "One-day Pass",
+                "price": 15.0,
+                "total_quantity": 100
+            },
+            {
+                "type": "Multi-day Pass",
+                "price": 40.0,
+                "total_quantity": 100
+            }
+        ],
+        "ticket_availability": "30/05/2025 00:53",
+        "ticket_cancel_availability": "30/07/2025 00:53"
+    },
+    {
+        "event_id": 7,
+        "title": "My Party",
+        "start_date": "03/07/2025",
+        "end_date": "03/07/2025",
+        "start_time": "01:07",
+        "location": "Πάτρα",
+        "type": "Διασκέδαση",
+        "description": "perigrafh",
+        "image": "event_images/dj-image-1.jpg",
+        "organizer_id": 1,
+        "organizer": "John Doe",
+        "ticket_types": [
+            {
+                "type": "Early Bird",
+                "price": 10.0,
+                "total_quantity": 92
+            },
+            {
+                "type": "Regular",
+                "price": 15.0,
+                "total_quantity": 92
+            },
+            {
+                "type": "VIP",
+                "price": 20.0,
+                "total_quantity": 92
+            },
+            {
+                "type": "Zone B",
+                "price": 30.0,
+                "total_quantity": 97
+            }
+        ],
+        "ticket_availability": "30/06/2025 01:07",
+        "ticket_cancel_availability": "30/06/2025 01:07"
     }
 ]
