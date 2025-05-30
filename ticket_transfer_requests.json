@@ -313,6 +313,54 @@
                     "quantity": 4
                 }
             ]
+        },
+        {
+            "request_id": "9",
+            "timestamp": "30/05/2025 17:52:10",
+            "status": "accepted",
+            "sender": {
+                "user_id": 5,
+                "name": "test",
+                "surname": "test"
+            },
+            "recipient": {
+                "user_id": 2,
+                "email": "att1"
+            },
+            "event": {
+                "event_id": 7,
+                "title": "My Party"
+            },
+            "tickets": [
+                {
+                    "ticket": {
+                        "ticket_id": 4,
+                        "event_id": 7,
+                        "user_id": 5,
+                        "ticket_type": "Early Bird",
+                        "quantity_bought": 4,
+                        "price": 10.0,
+                        "purchase_date": "30/05/2025 01:11:56",
+                        "status": "valid",
+                        "qr_code": "TKT-4-7-2"
+                    },
+                    "quantity": 1
+                },
+                {
+                    "ticket": {
+                        "ticket_id": 6,
+                        "event_id": 7,
+                        "user_id": 5,
+                        "ticket_type": "VIP",
+                        "quantity_bought": 4,
+                        "price": 20.0,
+                        "purchase_date": "30/05/2025 01:11:56",
+                        "status": "valid",
+                        "qr_code": "TKT-6-7-2"
+                    },
+                    "quantity": 1
+                }
+            ]
         }
     ]
 }

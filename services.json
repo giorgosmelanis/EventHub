@@ -74,6 +74,24 @@
             "event_title": null,
             "status": "assigned",
             "assigned_date": "29/05/2025 16:15:39"
+        },
+        {
+            "service_id": 5,
+            "name": "Vend1 Service1",
+            "type": "Φωτογραφία",
+            "description": "Cameraman - Videographer",
+            "start_date": "12/06/2025",
+            "end_date": "18/06/2026",
+            "pricing_type": "Πακέτο",
+            "price": "50",
+            "min_capacity": "0",
+            "max_capacity": "145",
+            "media_path": "service_media/photography-1.jpg",
+            "vendor_id": 3,
+            "vendor_name": "Jane Plane",
+            "event_id": null,
+            "event_title": null,
+            "status": "available"
         }
     ]
 }

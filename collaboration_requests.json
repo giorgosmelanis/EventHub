@@ -59,6 +59,16 @@
             "status": "accepted",
             "timestamp": "30/05/2025 02:15:48",
             "response_date": "30/05/2025 02:17:59"
+        },
+        {
+            "request_id": "req_20250530174929",
+            "event_id": 2,
+            "organizer_id": 1,
+            "vendor_id": 3,
+            "service_id": 5,
+            "status": "rejected",
+            "timestamp": "30/05/2025 17:49:29",
+            "response_date": "30/05/2025 17:49:41"
         }
     ]
 }

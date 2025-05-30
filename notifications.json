@@ -349,7 +349,7 @@
             "title": "Απάντηση σε Αίτημα Μεταφοράς Εισιτηρίων",
             "message": "Ο χρήστης att2 αποδέχτηκε το αίτημα μεταφοράς εισιτηρίων.",
             "timestamp": "30/05/2025 02:11:19",
-            "read": false,
+            "read": true,
             "category": "Ticket Transfers"
         },
         {
@@ -402,6 +402,66 @@
                 "event_title": "Nέα Εκδήλωση",
                 "response_date": "30/05/2025 02:17:59"
             }
+        },
+        {
+            "notification_id": "notif_20250530174931",
+            "user_id": 3,
+            "title": "Νέο Αίτημα Συνεργασίας",
+            "message": "Έχετε ένα νέο αίτημα συνεργασίας για την υπηρεσία 'Vend1 Service1' από τον διοργανωτή John Doe.",
+            "timestamp": "30/05/2025 17:49:31",
+            "read": true,
+            "category": "Collaboration Requests",
+            "collaboration_request": {
+                "request_id": "req_20250530174929",
+                "organizer_info": {
+                    "id": 1,
+                    "name": "John",
+                    "surname": "Doe",
+                    "email": "org1"
+                },
+                "event_info": {
+                    "id": 2,
+                    "title": "Tesτ_2 για Org1",
+                    "description": "Test για Event που ΔΕΝ εχει γίνει",
+                    "start_date": "30/05/2025",
+                    "end_date": "30/05/2025",
+                    "location": "Αθήνα",
+                    "type": "Ιδιωτικό"
+                },
+                "service_info": {
+                    "id": 5,
+                    "name": "Vend1 Service1",
+                    "description": "Cameraman - Videographer",
+                    "price": "50",
+                    "type": "Φωτογραφία"
+                }
+            },
+            "deleted": true
+        },
+        {
+            "notification_id": "notif_20250530174941",
+            "user_id": 1,
+            "title": "Αίτημα Συνεργασίας Απορρίφθηκε ❌",
+            "message": "Ο vendor Jane Plane απέρριψε το αίτημα συνεργασίας για την υπηρεσία 'Vend1 Service1' στην εκδήλωση 'Tesτ_2 για Org1'.",
+            "timestamp": "30/05/2025 17:49:41",
+            "read": true,
+            "category": "Collaboration Requests",
+            "collaboration_response": {
+                "status": "rejected",
+                "vendor_name": "Jane Plane",
+                "service_name": "Vend1 Service1",
+                "event_title": "Tesτ_2 για Org1",
+                "response_date": "30/05/2025 17:49:41"
+            }
+        },
+        {
+            "notification_id": "notif_20250530175222",
+            "user_id": 5,
+            "title": "Απάντηση σε Αίτημα Μεταφοράς Εισιτηρίων",
+            "message": "Ο χρήστης att1 αποδέχτηκε το αίτημα μεταφοράς εισιτηρίων.",
+            "timestamp": "30/05/2025 17:52:22",
+            "read": false,
+            "category": "Ticket Transfers"
         }
     ]
 }

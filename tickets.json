@@ -133,7 +133,7 @@
         "event_id": 7,
         "user_id": 5,
         "ticket_type": "Early Bird",
-        "quantity_bought": 4,
+        "quantity_bought": 3,
         "price": 10.0,
         "purchase_date": "30/05/2025 01:11:56",
         "status": "valid",
@@ -155,7 +155,7 @@
         "event_id": 7,
         "user_id": 5,
         "ticket_type": "VIP",
-        "quantity_bought": 4,
+        "quantity_bought": 3,
         "price": 20.0,
         "purchase_date": "30/05/2025 01:11:56",
         "status": "valid",
@@ -204,5 +204,27 @@
         "purchase_date": "29/05/2025 22:59:04",
         "status": "valid",
         "qr_code": "TKT-3-4-2"
+    },
+    {
+        "ticket_id": 4,
+        "event_id": 7,
+        "user_id": 2,
+        "ticket_type": "Early Bird",
+        "quantity_bought": 1,
+        "price": 10.0,
+        "purchase_date": "30/05/2025 01:11:56",
+        "status": "valid",
+        "qr_code": "TKT-4-7-2"
+    },
+    {
+        "ticket_id": 6,
+        "event_id": 7,
+        "user_id": 2,
+        "ticket_type": "VIP",
+        "quantity_bought": 1,
+        "price": 20.0,
+        "purchase_date": "30/05/2025 01:11:56",
+        "status": "valid",
+        "qr_code": "TKT-6-7-2"
     }
 ]
